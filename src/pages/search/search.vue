@@ -62,6 +62,7 @@ const doSearch = async () => {
   hasSearched.value = true;
   
   try {
+    // TODO: 实现多源并发搜索功能，集成cheerio解析HTML
     uni.showToast({
       title: '书源功能开发中',
       icon: 'none'

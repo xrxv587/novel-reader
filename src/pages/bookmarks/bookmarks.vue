@@ -6,6 +6,7 @@
       <text class="empty-desc">阅读时点击顶部书签按钮添加</text>
     </view>
     <view v-else class="bookmark-list">
+      <!-- TODO: 实现书签删除功能，长按或左滑删除 -->
       <view 
         v-for="bookmark in bookmarks" 
         :key="bookmark.id"

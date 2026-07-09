@@ -1,5 +1,5 @@
 import fileUtil from './file';
-import chapterUtil, { ChapterInfo } from './chapter';
+import chapterUtil, { type ChapterInfo } from './chapter';
 import chapterDB from './chapter-db';
 import { useBookshelfStore } from '@/store/bookshelf';
 

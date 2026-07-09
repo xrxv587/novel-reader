@@ -34,6 +34,7 @@
       </view>
     </scroll-view>
     
+    <!-- TODO: 实现覆盖翻页模式的翻页动画效果 -->
     <view 
       v-else
       class="content-page"
@@ -53,6 +54,7 @@
       <view class="nav-bar">
         <text class="back-btn" @click.stop="goBack">←</text>
         <text class="nav-title" :style="{ color: settings.textColor }">{{ bookTitle }}</text>
+        <!-- TODO: 添加书签按钮，点击记录当前位置到书签表 -->
         <text class="menu-btn" @click.stop="showBookmarks">🔖</text>
       </view>
     </view>
@@ -394,9 +396,12 @@ const scheduleSaveProgress = () => {
 
 const saveReadProgress = () => {
   if (bookId.value > 0) {
+    // TODO: 实现阅读位置精确还原，存储字符偏移量而非固定为0
     bookshelfStore.updateBookProgress(bookId.value, currentChapterIndex.value, 0);
   }
 };
+
+// TODO: 实现预加载下一章功能，当前章读到80%时后台异步加载
 </script>
 
 <style lang="scss" scoped>

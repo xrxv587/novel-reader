@@ -9,6 +9,7 @@
       <text class="empty-desc">去"功能"页导入本地小说吧</text>
     </view>
     <view v-else class="book-list">
+      <!-- TODO: 实现左滑删除书籍功能，删除时需确认并删除本地文件 -->
       <view 
         v-for="book in books" 
         :key="book.id" 

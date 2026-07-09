@@ -67,6 +67,7 @@ const loadSources = async () => {
 };
 
 const addSource = () => {
+  // TODO: 实现书源添加功能，弹出表单填写书源配置（name, baseUrl, selectors等）
   uni.showToast({
     title: '功能开发中',
     icon: 'none'
@@ -87,6 +88,7 @@ const toggleSource = async (source: any, e: any) => {
 };
 
 const importSource = () => {
+  // TODO: 实现书源导入功能，支持导入JSON格式的书源配置文件
   uni.showToast({
     title: '功能开发中',
     icon: 'none'
@@ -94,6 +96,7 @@ const importSource = () => {
 };
 
 const exportSource = () => {
+  // TODO: 实现书源导出功能，将书源配置导出为JSON文件
   uni.showToast({
     title: '功能开发中',
     icon: 'none'

@@ -59,6 +59,10 @@
     
     <view class="setting-group">
       <text class="group-title">其他</text>
+      <!-- TODO: 添加字体选择配置项（宋体/楷体/黑体/等宽） -->
+      <!-- TODO: 添加段间距配置项 -->
+      <!-- TODO: 添加首行缩进配置项 -->
+      <!-- TODO: 添加左右边距配置项 -->
       <view class="setting-item" @click="resetSettings">
         <text class="item-label">恢复默认设置</text>
         <text class="item-arrow">›</text>
