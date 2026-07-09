@@ -1,0 +1,77 @@
+{
+	"pages": [
+		{
+			"path": "pages/bookshelf/bookshelf",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "书架"
+			}
+		},
+		{
+			"path": "pages/features/features",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "功能"
+			}
+		},
+		{
+			"path": "pages/reader/reader",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "阅读"
+			}
+		},
+		{
+			"path": "pages/search/search",
+			"style": {
+				"navigationBarTitleText": "搜索"
+			}
+		},
+		{
+			"path": "pages/bookmarks/bookmarks",
+			"style": {
+				"navigationBarTitleText": "书签"
+			}
+		},
+		{
+			"path": "pages/chapter-list/chapter-list",
+			"style": {
+				"navigationBarTitleText": "目录"
+			}
+		},
+		{
+			"path": "pages/book-source/book-source",
+			"style": {
+				"navigationBarTitleText": "书源管理"
+			}
+		},
+		{
+			"path": "pages/settings/settings",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "小说阅读器",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#f5f5f5"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#667eea",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/bookshelf/bookshelf",
+				"text": "书架"
+			},
+			{
+				"pagePath": "pages/features/features",
+				"text": "功能"
+			}
+		]
+	}
+}
