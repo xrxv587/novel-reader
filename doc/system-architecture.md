@@ -1,0 +1,576 @@
+# 系统架构设计文档
+
+## 一、项目概述
+
+本项目是基于 **uni-app + Vue 3 + Vite** 开发的跨平台小说阅读器，支持 iOS 和 Android 双端。核心能力包括本地 txt 小说导入、沉浸式阅读体验、排版美化和书签管理。
+
+### 1.1 技术栈
+
+| 维度 | 选型 | 说明 |
+|------|------|------|
+| 框架 | uni-app (Vue 3 + Vite) | 一套代码编译到 iOS / Android |
+| 状态管理 | Pinia | Vue 3 官方推荐，轻量易用 |
+| 本地数据库 | plus.sqlite | App 端原生 SQLite，存结构化数据 |
+| 本地缓存 | uni.setStorageSync | 存用户设置等小配置 |
+| 文件操作 | plus.io | App 端文件选择、读取、复制 |
+| 编码检测 | jschardet | 纯 JS 实现，检测文件编码 |
+| 编码转换 | iconv-lite | 纯 JS 实现，GBK/UTF-8 转码 |
+| 开发语言 | TypeScript | 类型安全 |
+| 样式 | SCSS | CSS 预处理器 |
+
+### 1.2 架构特点
+
+- **纯前端架构**：所有逻辑在 App 内完成，无服务端依赖
+- **隐私友好**：用户数据全部存在本地
+- **跨端能力**：一套代码编译 iOS / Android
+- **可扩展**：书源逻辑预留接口，未来可扩展在线阅读
+
+---
+
+## 二、整体架构
+
+### 2.1 分层架构
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                      App 客户端                           │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐    │
+│  │                    页面层 (Pages)                 │    │
+│  │  ┌──────────┬──────────┬──────────┬──────────┐  │    │
+│  │  │  书架页   │  阅读页   │  功能页   │  设置页   │  │    │
+│  │  ├──────────┼──────────┼──────────┼──────────┤  │    │
+│  │  │  搜索页   │  书签页   │  目录页   │ 书源管理  │  │    │
+│  │  └──────────┴──────────┴──────────┴──────────┘  │    │
+│  ├──────────────────────────────────────────────────┤    │
+│  │                  状态层 (Store)                   │    │
+│  │  ┌──────────────┬──────────────┬─────────────┐  │    │
+│  │  │ bookshelf    │   reader     │  settings   │  │    │
+│  │  │  (书架状态)   │  (阅读状态)   │  (设置状态)  │  │    │
+│  │  └──────────────┴──────────────┴─────────────┘  │    │
+│  ├──────────────────────────────────────────────────┤    │
+│  │                  工具层 (Utils)                   │    │
+│  │  ┌──────────┬──────────┬──────────┬──────────┐  │    │
+│  │  │   db     │  file    │ chapter  │  import  │  │    │
+│  │  │ (数据库)  │ (文件操作)│(章节解析) │(导入服务) │  │    │
+│  │  └──────────┴──────────┴──────────┴──────────┘  │    │
+│  ├──────────────────────────────────────────────────┤    │
+│  │                  数据层 (Data)                    │    │
+│  │  ┌────────────────────────────────────────────┐ │    │
+│  │  │    SQLite (books/chapters/bookmarks/       │ │    │
+│  │  │            book_sources/settings)          │ │    │
+│  │  └────────────────────────────────────────────┘ │    │
+│  │  ┌────────────────────────────────────────────┐ │    │
+│  │  │       本地文件系统 (books/ 目录)            │ │    │
+│  │  └────────────────────────────────────────────┘ │    │
+│  │  ┌────────────────────────────────────────────┐ │    │
+│  │  │       uni.setStorage (用户设置)            │ │    │
+│  │  └────────────────────────────────────────────┘ │    │
+│  └──────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 2.2 数据流
+
+```
+用户操作 → 页面组件 → Store (Pinia) → Utils → SQLite / 文件系统
+                    ↑                                    ↓
+                    └────────────────────────────────────┘
+                            数据回传，驱动视图更新
+```
+
+---
+
+## 三、目录结构
+
+### 3.1 实际目录结构
+
+```
+/workspace
+├── src/
+│   ├── pages/                    # 页面层
+│   │   ├── bookshelf/            # 书架页
+│   │   │   └── bookshelf.vue
+│   │   ├── reader/               # 阅读页
+│   │   │   └── reader.vue
+│   │   ├── features/             # 功能页
+│   │   │   └── features.vue
+│   │   ├── search/               # 搜索页
+│   │   │   └── search.vue
+│   │   ├── bookmarks/            # 书签页
+│   │   │   └── bookmarks.vue
+│   │   ├── chapter-list/         # 章节目录页
+│   │   │   └── chapter-list.vue
+│   │   ├── book-source/          # 书源管理页
+│   │   │   └── book-source.vue
+│   │   ├── settings/             # 设置页
+│   │   │   └── settings.vue
+│   │   └── index/                # 首页（tabBar 首页占位）
+│   │       └── index.vue
+│   ├── store/                    # 状态管理层 (Pinia)
+│   │   ├── bookshelf.ts          # 书架状态
+│   │   ├── reader.ts             # 阅读状态
+│   │   └── settings.ts           # 设置状态
+│   ├── utils/                    # 工具层
+│   │   ├── db.ts                 # 数据库操作封装
+│   │   ├── file.ts               # 文件操作工具
+│   │   ├── chapter.ts            # 章节解析工具
+│   │   ├── chapter-db.ts         # 章节数据库操作
+│   │   └── import-service.ts     # 书籍导入服务
+│   ├── static/                   # 静态资源
+│   │   └── logo.png
+│   ├── App.vue                   # 根组件
+│   ├── main.ts                   # 入口文件
+│   ├── pages.json                # 页面路由配置
+│   ├── manifest.json             # 应用配置
+│   ├── uni.scss                  # 全局样式变量
+│   └── env.d.ts                  # TS 类型声明
+├── doc/                          # 文档目录
+│   ├── database-design.md        # 数据库设计文档
+│   └── system-architecture.md    # 系统架构设计文档（本文件）
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+└── todo-list.md                  # 项目进度清单
+```
+
+---
+
+## 四、核心模块详解
+
+### 4.1 书架模块
+
+**文件**：[`src/pages/bookshelf/bookshelf.vue`](file:///workspace/src/pages/bookshelf/bookshelf.vue)、[`src/store/bookshelf.ts`](file:///workspace/src/store/bookshelf.ts)
+
+**功能**：
+- 展示书籍列表（按最后阅读时间倒序）
+- 每本书显示封面、书名、作者、阅读进度
+- 点击书籍跳转到阅读页
+- 空状态引导
+
+**数据流向**：
+```
+onShow → bookshelfStore.loadBooks() → SELECT * FROM books → books 数组 → 渲染列表
+```
+
+**已实现**：
+- ✅ 书籍列表展示
+- ✅ 阅读进度显示（按章节数计算百分比）
+- ✅ 点击跳转阅读页
+- ✅ 空状态
+
+**未实现**：
+- ❌ 左滑删除书籍
+- ❌ 删除时确认弹窗
+- ❌ 删除本地文件
+
+---
+
+### 4.2 阅读引擎模块
+
+**文件**：[`src/pages/reader/reader.vue`](file:///workspace/src/pages/reader/reader.vue)、[`src/store/reader.ts`](file:///workspace/src/store/reader.ts)
+
+**功能**：
+- 章节内容渲染（段落数组）
+- 滚动模式阅读
+- 覆盖翻页模式（UI 预留，无动画）
+- 上下章切换
+- 阅读进度自动保存（章节级别）
+- 阅读页手势：左/中/右点击
+- 顶部导航栏 + 底部菜单
+- 排版设置面板
+
+**阅读流程**：
+```
+进入阅读页 → 获取 bookId → 加载书籍信息 → 加载章节列表
+    → 加载当前章节内容 → 分段渲染 → 用户交互
+    → 自动保存进度（防抖 2 秒）
+```
+
+**手势交互**：
+- 点击左侧 1/3 → 上一章
+- 点击中间 1/3 → 呼出/隐藏菜单
+- 点击右侧 1/3 → 下一章
+
+**已实现**：
+- ✅ 滚动模式阅读
+- ✅ 章节按需加载
+- ✅ 文本分段渲染
+- ✅ 上下章切换
+- ✅ 阅读进度自动保存（章节级别）
+- ✅ 点击区域手势
+- ✅ 顶部/底部菜单
+- ✅ 设置面板（字号、主题、翻页方式切换）
+- ✅ 进度条拖拽跳转
+
+**未实现**：
+- ❌ 覆盖翻页动画
+- ❌ 仿真翻页模式
+- ❌ 阅读位置精确还原（字符偏移量）
+- ❌ 预加载下一章
+- ❌ 上下滑动调亮度
+- ❌ 书签添加按钮功能
+
+---
+
+### 4.3 文件导入模块
+
+**文件**：[`src/utils/import-service.ts`](file:///workspace/src/utils/import-service.ts)、[`src/utils/file.ts`](file:///workspace/src/utils/file.ts)
+
+**导入流程**：
+```
+用户点击"导入本地书籍"
+    ↓
+plus.io.chooseFile 选择 .txt 文件
+    ↓
+复制文件到私有目录 books/（防止原文件被删）
+    ↓
+读取文件前 2KB，jschardet 检测编码
+    ↓
+书籍元数据写入 books 表
+    ↓
+后台异步解析章节（不阻塞UI）
+    ↓
+章节信息存入 chapters 表
+    ↓
+返回成功，刷新书架
+```
+
+**已实现**：
+- ✅ txt 文件选择（plus.io.chooseFile）
+- ✅ 文件复制到私有目录
+- ✅ 编码检测（jschardet）
+- ✅ GBK/UTF-8 转码（iconv-lite）
+- ✅ 书籍信息入库
+- ✅ 异步章节解析
+- ✅ 大文件全文读取后分章
+
+**注意**：当前实现是一次性读取全文再分章，对于超大文件可能有性能问题。未来可优化为流式分块读取。
+
+---
+
+### 4.4 章节解析模块
+
+**文件**：[`src/utils/chapter.ts`](file:///workspace/src/utils/chapter.ts)
+
+**解析策略**：
+1. **正则匹配优先**：匹配「第X章/节/回/卷/部」格式的章节标题
+2. **Fallback 分章**：未匹配到章节时，按固定字数（约 5000 字）分章
+
+**章节匹配正则**：
+```javascript
+/^\s*(第[一二三四五六七八九十百千零\d]+[章节回卷部][\s、．。：:]*.*)$/gm
+```
+
+**核心函数**：
+| 函数 | 说明 |
+|------|------|
+| `parseChapters(content)` | 解析章节，返回章节信息数组 |
+| `splitBySize(content, chunkSize)` | 按字数分章（fallback） |
+| `splitIntoParagraphs(content)` | 将文本按段落分割 |
+| `getChapterByOffset(chapters, offset)` | 根据字符偏移定位章节 |
+
+---
+
+### 4.5 排版设置模块
+
+**文件**：[`src/store/settings.ts`](file:///workspace/src/store/settings.ts)、[`src/pages/settings/settings.vue`](file:///workspace/src/pages/settings/settings.vue)
+
+**存储方式**：`uni.setStorageSync`（本地 Storage，非 SQLite settings 表）
+
+**设置项**：
+
+| 设置项 | 默认值 | 范围 | 是否已实现UI |
+|--------|--------|------|-------------|
+| fontSize (字号) | 18px | 12 ~ 28px | ✅ |
+| lineHeight (行间距) | 1.75 | 1.2 ~ 2.5 | ✅ |
+| theme (主题) | rice (米白) | 5种主题 | ✅ |
+| flipMode (翻页方式) | scroll | scroll / cover | ✅ |
+| paragraphGap (段间距) | 1em | - | ❌ 代码有字段，无UI |
+| textIndent (首行缩进) | 2em | - | ❌ 代码有字段，无UI |
+| paddingX (左右边距) | 20px | - | ❌ 代码有字段，无UI |
+| fontFamily (字体) | system-ui | - | ❌ 代码有字段，无UI |
+| brightness (亮度) | 100 | 10 ~ 100 | ❌ 代码有字段，无UI |
+
+**主题预设**（5 种）：
+- `white` - 纯白背景
+- `rice` - 米白背景（默认）
+- `green` - 护眼绿
+- `night` - 夜间黑
+- `parchment` - 羊皮纸
+
+---
+
+### 4.6 书签模块
+
+**文件**：[`src/pages/bookmarks/bookmarks.vue`](file:///workspace/src/pages/bookmarks/bookmarks.vue)
+
+**功能**：
+- 书签列表展示（按创建时间倒序）
+- 点击书签跳转到对应章节
+- 支持从阅读页传入 bookId 筛选某本书的书签
+
+**已实现**：
+- ✅ 书签列表展示
+- ✅ 书签跳转
+
+**未实现**：
+- ❌ 添加书签（阅读页按钮无实际功能）
+- ❌ 删除书签
+
+---
+
+### 4.7 章节目录模块
+
+**文件**：[`src/pages/chapter-list/chapter-list.vue`](file:///workspace/src/pages/chapter-list/chapter-list.vue)
+
+**功能**：
+- 展示全书章节列表
+- 当前阅读章节高亮
+- 点击跳转到指定章节
+
+**已实现**：
+- ✅ 章节目录展示
+- ✅ 当前章节高亮
+- ✅ 点击跳转
+
+---
+
+### 4.8 书源管理模块
+
+**文件**：[`src/pages/book-source/book-source.vue`](file:///workspace/src/pages/book-source/book-source.vue)
+
+**状态**：UI 框架已搭，核心功能未实现
+
+**已实现**：
+- ✅ 书源列表展示
+- ✅ 启用/禁用开关
+- ✅ 导入/导出按钮（占位）
+- ✅ 添加按钮（占位）
+
+**未实现**：
+- ❌ 书源添加/编辑
+- ❌ 书源导入导出（JSON）
+- ❌ 书源验证
+- ❌ 预置书源
+- ❌ cheerio HTML 解析
+- ❌ 在线搜索
+- ❌ 在线章节抓取
+
+---
+
+### 4.9 搜索模块
+
+**文件**：[`src/pages/search/search.vue`](file:///workspace/src/pages/search/search.vue)
+
+**状态**：UI 框架已搭，无实际搜索功能
+
+**已实现**：
+- ✅ 搜索输入框
+- ✅ 搜索结果分组展示 UI（按书源分组）
+- ✅ 空状态、搜索中状态
+
+**未实现**：
+- ❌ 多源并发搜索
+- ❌ HTML 解析
+- ❌ 加入书架
+
+---
+
+## 五、状态管理（Pinia）
+
+### 5.1 Store 概览
+
+| Store | 文件 | 职责 |
+|-------|------|------|
+| bookshelf | `store/bookshelf.ts` | 书籍列表管理、增删改查 |
+| reader | `store/reader.ts` | 当前阅读状态、菜单显隐 |
+| settings | `store/settings.ts` | 用户排版设置 |
+
+### 5.2 bookshelf store
+
+**状态**：
+- `books: Book[]` - 书籍列表
+
+**方法**：
+| 方法 | 说明 |
+|------|------|
+| `loadBooks()` | 从数据库加载书籍列表 |
+| `addBook(book)` | 添加新书，返回 bookId |
+| `updateBookProgress(bookId, chapter, position)` | 更新阅读进度 |
+| `deleteBook(bookId)` | 删除书籍及关联数据 |
+| `getBookById(bookId)` | 根据 ID 获取单本书 |
+
+### 5.3 reader store
+
+**状态**：
+- `currentBookId` - 当前书籍 ID
+- `currentChapterIndex` - 当前章节索引
+- `currentPosition` - 当前阅读位置
+- `chapters: Chapter[]` - 章节列表
+- `isMenuVisible` - 菜单是否显示
+- `isLoading` - 加载状态
+
+**方法**：
+| 方法 | 说明 |
+|------|------|
+| `setBook(bookId)` | 设置当前书籍 |
+| `setChapter(index)` | 设置当前章节 |
+| `setPosition(position)` | 设置阅读位置 |
+| `setChapters(chapterList)` | 设置章节列表 |
+| `toggleMenu()` | 切换菜单显示 |
+| `nextChapter() / prevChapter()` | 切换章节 |
+| `getCurrentChapter()` | 获取当前章节对象 |
+
+### 5.4 settings store
+
+**状态**：
+- `settings: ReaderSettings` - 设置对象
+- `THEME_PRESETS` - 主题预设（常量）
+
+**方法**：
+| 方法 | 说明 |
+|------|------|
+| `loadSettings()` | 从 Storage 加载设置 |
+| `saveSettings()` | 保存设置到 Storage |
+| `setFontSize(size)` | 设置字号 |
+| `setLineHeight(height)` | 设置行高 |
+| `setTheme(theme)` | 设置主题 |
+| `setFlipMode(mode)` | 设置翻页模式 |
+| `setBrightness(value)` | 设置亮度 |
+| `resetSettings()` | 恢复默认设置 |
+
+---
+
+## 六、数据库设计
+
+详细数据库设计请参考 [数据库设计文档](./database-design.md)。
+
+五张表概览：
+1. `books` - 书籍表
+2. `chapters` - 章节表
+3. `bookmarks` - 书签表
+4. `book_sources` - 书源表
+5. `settings` - 设置表（**注意：当前代码实际使用 uni.setStorage，settings 表未使用**）
+
+---
+
+## 七、技术方案 vs 实际实现差异对比
+
+### 7.1 目录结构差异
+
+| 技术方案 | 实际实现 | 说明 |
+|----------|----------|------|
+| `components/` 目录 | 无 | 暂无独立组件，逻辑都在页面内 |
+| `uni_modules/` | 无 | 未使用第三方插件 |
+| `utils/encoding.js` | 无 | 编码功能整合在 `file.ts` 中 |
+| `utils/book-source.js` | 无 | 在线书源功能未开发 |
+| `pages/index/` | 有 | 技术方案未提及，实际有首页占位 |
+
+### 7.2 存储方式差异
+
+| 技术方案 | 实际实现 | 说明 |
+|----------|----------|------|
+| 设置存入 SQLite settings 表 | 设置存入 uni.setStorage | 小配置用 Storage 更轻量 |
+
+### 7.3 UI 组件库差异
+
+| 技术方案 | 实际实现 | 说明 |
+|----------|----------|------|
+| uView Plus 或 uni-ui | 无组件库，纯原生样式 | 目前 UI 全手写，未引入组件库 |
+
+### 7.4 功能实现差异
+
+#### ✅ 已完成功能（P0 核心）
+
+| 功能 | 技术方案 | 实际实现 |
+|------|----------|----------|
+| 本地 txt 导入 | P0 必须有 | ✅ 已完成 |
+| 章节自动识别 | P0 必须有 | ✅ 已完成 |
+| 阅读（滚动模式） | P0 必须有 | ✅ 已完成 |
+| 阅读进度自动保存 | P0 必须有 | ✅ 已完成（章节级别） |
+| 基础排版设置 | P0 必须有 | ✅ 已完成（字号/行距/主题） |
+| 章节目录 | P1 很重要 | ✅ 已完成 |
+| 书签列表展示 | P1 很重要 | ✅ 部分完成（仅展示和跳转） |
+
+#### ❌ 未完成功能
+
+| 功能 | 优先级 | 状态 |
+|------|--------|------|
+| 覆盖翻页模式 | P1 | ❌ UI 预留，无动画 |
+| 书签添加/删除 | P1 | ❌ 未实现 |
+| 书架管理（左滑删除） | P1 | ❌ 未实现 |
+| 阅读位置精确还原 | P1 | ❌ 未实现 |
+| 在线书源搜索 | P2 | ❌ 未实现 |
+| 书源管理完整功能 | P2 | ❌ 仅 UI 框架 |
+| 预加载下一章 | P2 | ❌ 未实现 |
+| 仿真翻页 | P3 | ❌ 未实现 |
+| 亮度调节 | P3 | ❌ 代码有字段，无UI |
+| 字体选择 | P3 | ❌ 代码有字段，无UI |
+| 段间距/缩进/边距配置 | P3 | ❌ 代码有字段，无UI |
+
+### 7.5 依赖差异
+
+| 技术方案 | 实际实现 | 说明 |
+|----------|----------|------|
+| cheerio@0.22.0 | 未安装 | 在线书源功能未开发，暂不需要 |
+
+---
+
+## 八、关键技术点
+
+### 8.1 plus.io 闭区间坑
+
+**问题**：`plus.io` 的 `file.slice(start, end)` 是**闭区间**（start 和 end 都包含），而标准 Web API 是半开区间 `[start, end)`。
+
+**解决方案**：读取时 `end - 1` 修正。
+
+代码位置：[`src/utils/file.ts#L21`](file:///workspace/src/utils/file.ts#L21)
+
+```javascript
+const blob = file.slice(start, end - 1);
+```
+
+### 8.2 章节内容缓存策略
+
+**策略**：已阅读过的章节，段落数组 JSON 存入 `chapters.content` 字段，下次直接读缓存，不重读文件。
+
+代码位置：[`src/utils/import-service.ts#L85-L98`](file:///workspace/src/utils/import-service.ts#L85-L98)
+
+### 8.3 进度保存防抖
+
+**策略**：阅读进度变更后 2 秒防抖保存，避免频繁写数据库。
+
+代码位置：[`src/pages/reader/reader.vue#L388-L395`](file:///workspace/src/pages/reader/reader.vue#L388-L395)
+
+---
+
+## 九、相关文件索引
+
+### 页面层
+- 书架页：[`src/pages/bookshelf/bookshelf.vue`](file:///workspace/src/pages/bookshelf/bookshelf.vue)
+- 阅读页：[`src/pages/reader/reader.vue`](file:///workspace/src/pages/reader/reader.vue)
+- 功能页：[`src/pages/features/features.vue`](file:///workspace/src/pages/features/features.vue)
+- 设置页：[`src/pages/settings/settings.vue`](file:///workspace/src/pages/settings/settings.vue)
+- 书签页：[`src/pages/bookmarks/bookmarks.vue`](file:///workspace/src/pages/bookmarks/bookmarks.vue)
+- 目录页：[`src/pages/chapter-list/chapter-list.vue`](file:///workspace/src/pages/chapter-list/chapter-list.vue)
+- 书源管理：[`src/pages/book-source/book-source.vue`](file:///workspace/src/pages/book-source/book-source.vue)
+- 搜索页：[`src/pages/search/search.vue`](file:///workspace/src/pages/search/search.vue)
+
+### 状态层
+- 书架 Store：[`src/store/bookshelf.ts`](file:///workspace/src/store/bookshelf.ts)
+- 阅读 Store：[`src/store/reader.ts`](file:///workspace/src/store/reader.ts)
+- 设置 Store：[`src/store/settings.ts`](file:///workspace/src/store/settings.ts)
+
+### 工具层
+- 数据库封装：[`src/utils/db.ts`](file:///workspace/src/utils/db.ts)
+- 文件操作：[`src/utils/file.ts`](file:///workspace/src/utils/file.ts)
+- 章节解析：[`src/utils/chapter.ts`](file:///workspace/src/utils/chapter.ts)
+- 章节 DB：[`src/utils/chapter-db.ts`](file:///workspace/src/utils/chapter-db.ts)
+- 导入服务：[`src/utils/import-service.ts`](file:///workspace/src/utils/import-service.ts)
+
+### 文档
+- 数据库设计：[`doc/database-design.md`](file:///workspace/doc/database-design.md)
+- 系统架构：[`doc/system-architecture.md`](file:///workspace/doc/system-architecture.md)（本文件）
+- 项目进度：[`todo-list.md`](file:///workspace/todo-list.md)
+- 技术方案：[`小说阅读器技术方案.md`](file:///workspace/小说阅读器技术方案.md)
