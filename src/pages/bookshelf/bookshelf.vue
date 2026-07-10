@@ -45,6 +45,8 @@
         </view>
       </view>
     </view>
+
+    <tabbar :current="0" />
   </view>
 </template>
 

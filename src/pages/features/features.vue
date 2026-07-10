@@ -1,7 +1,7 @@
 <template>
   <view class="features">
-    <view class="header">
-      <text class="title">功能</text>
+    <view class="nav-bar">
+      <text class="nav-title">功能</text>
     </view>
     <view class="feature-list">
       <view class="feature-item" @click="goToImport">
@@ -59,6 +59,8 @@
         <text class="arrow">›</text>
       </view>
     </view>
+
+    <tabbar :current="1" />
   </view>
 </template>
 
@@ -118,66 +120,76 @@ const goToSettings = () => {
 <style lang="scss" scoped>
 .features {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  padding-bottom: 100rpx;
+  background-color: #F5F5F5;
+  padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
 }
 
-.header {
-  padding: 60rpx 30rpx 30rpx;
-  background-color: #fff;
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32rpx;
+  background-color: #F5F5F5;
+  padding-top: env(safe-area-inset-top);
 }
 
-.title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333;
+.nav-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #2D2D2D;
+  line-height: 1;
+  letter-spacing: -0.01em;
 }
 
 .feature-list {
-  padding: 20rpx;
+  padding: 48rpx 32rpx 0 32rpx;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  padding: 30rpx;
-  background-color: #fff;
+  padding: 32rpx;
+  background-color: #FFFFFF;
   border-radius: 16rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
 }
 
 .feature-icon {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 16rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 30rpx;
+  margin-right: 32rpx;
 }
 
 .import-icon {
-  background-color: #e3f2fd;
+  background-color: #E3F2FD;
 }
 
 .source-icon {
-  background-color: #e8f5e9;
+  background-color: #E8F5EE;
 }
 
 .search-icon {
-  background-color: #fff3e0;
+  background-color: #FFF3E0;
 }
 
 .bookmark-icon {
-  background-color: #fce4ec;
+  background-color: #FCE4EC;
 }
 
 .settings-icon {
-  background-color: #f3e5f5;
+  background-color: #F3E5F5;
 }
 
 .icon-text {
-  font-size: 40rpx;
+  font-size: 44rpx;
 }
 
 .feature-info {
@@ -188,18 +200,18 @@ const goToSettings = () => {
 
 .feature-title {
   font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
+  font-weight: 500;
+  color: #2D2D2D;
   margin-bottom: 8rpx;
 }
 
 .feature-desc {
   font-size: 26rpx;
-  color: #999;
+  color: #999999;
 }
 
 .arrow {
-  font-size: 40rpx;
-  color: #ccc;
+  font-size: 44rpx;
+  color: #B2B2B2;
 }
 </style>
