@@ -1,6 +1,19 @@
 import { detect } from 'jschardet';
 import * as iconv from 'iconv-lite';
 
+// #ifndef APP-PLUS
+// H5 模式下，用户选择的 File 对象暂存到内存，key 为 mem:// 路径
+const memoryFileStore = new Map<string, File>();
+
+export function getMemoryFile(path: string): File | undefined {
+  return memoryFileStore.get(path);
+}
+
+function isMemoryPath(path: string): boolean {
+  return !!(path && path.startsWith('mem://'));
+}
+// #endif
+
 export function readFileRange(filePath: string, start: number, end: number, encoding: string = 'utf-8'): Promise<string> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS
@@ -32,7 +45,20 @@ export function readFileRange(filePath: string, start: number, end: number, enco
     // #endif
 
     // #ifndef APP-PLUS
-    resolve('');
+    if (isMemoryPath(filePath)) {
+      const file = memoryFileStore.get(filePath);
+      if (!file) {
+        reject(new Error('Memory file not found'));
+        return;
+      }
+      const blob = file.slice(start, end);
+      const reader = new FileReader();
+      reader.onload = (e) => resolve((e.target as any).result as string);
+      reader.onerror = () => reject(new Error('Read file range failed'));
+      reader.readAsText(blob, encoding);
+    } else {
+      resolve('');
+    }
     // #endif
   });
 }
@@ -68,7 +94,20 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
     // #endif
 
     // #ifndef APP-PLUS
-    resolve(new ArrayBuffer(0));
+    if (isMemoryPath(filePath)) {
+      const file = memoryFileStore.get(filePath);
+      if (!file) {
+        reject(new Error('Memory file not found'));
+        return;
+      }
+      const blob = file.slice(start, end);
+      const reader = new FileReader();
+      reader.onload = (e) => resolve((e.target as any).result as ArrayBuffer);
+      reader.onerror = () => reject(new Error('Read file as arraybuffer failed'));
+      reader.readAsArrayBuffer(blob);
+    } else {
+      resolve(new ArrayBuffer(0));
+    }
     // #endif
   });
 }
@@ -139,7 +178,12 @@ export function getFileSize(filePath: string): Promise<number> {
     // #endif
 
     // #ifndef APP-PLUS
-    resolve(0);
+    if (isMemoryPath(filePath)) {
+      const file = memoryFileStore.get(filePath);
+      resolve(file ? file.size : 0);
+    } else {
+      resolve(0);
+    }
     // #endif
   });
 }
@@ -179,7 +223,12 @@ export function copyFileToPrivate(srcPath: string, destName: string): Promise<st
     // #endif
 
     // #ifndef APP-PLUS
-    resolve('');
+    // H5 无文件系统，内存文件无需复制，直接沿用原 mem:// 路径
+    if (isMemoryPath(srcPath)) {
+      resolve(srcPath);
+    } else {
+      resolve('');
+    }
     // #endif
   });
 }
@@ -205,7 +254,22 @@ export function chooseTxtFile(): Promise<{ path: string; name: string }> {
     // #endif
 
     // #ifndef APP-PLUS
-    reject(new Error('File choose not supported on this platform'));
+    // H5 模式：用 <input type="file"> 选择 txt，把 File 对象存入内存
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.txt,text/plain';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        reject(new Error('No file selected'));
+        return;
+      }
+      const memPath = `mem://${Date.now()}_${file.name}`;
+      memoryFileStore.set(memPath, file);
+      resolve({ path: memPath, name: file.name });
+    };
+    input.onerror = () => reject(new Error('File choose failed'));
+    input.click();
     // #endif
   });
 }

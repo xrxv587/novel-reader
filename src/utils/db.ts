@@ -136,25 +136,40 @@ export function executeSql(sql: string, params?: any[]): Promise<any> {
 function mockExecute(sql: string, params?: any[]): any[] {
   const db = (dbInstance as any).data;
   const sqlUpper = sql.trim().toUpperCase();
-  
+
   if (sqlUpper.startsWith('CREATE TABLE')) {
     return [];
   }
-  
+
+  // INSERT：解析列名，构造行对象并真正写入数组
   if (sqlUpper.startsWith('INSERT INTO')) {
-    const tableMatch = sql.match(/INSERT INTO (\w+)/i);
-    if (tableMatch) {
-      const table = tableMatch[1] as keyof typeof db;
-      const id = (db[table] as any[]).length + 1;
+    const m = sql.match(/INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i);
+    if (m) {
+      const table = m[1] as keyof typeof db;
+      const columns = m[2].split(',').map((s: string) => s.trim());
+      const arr = (db[table] as any[]) || [];
+      const id = arr.length + 1;
+      const row: any = { id };
+      columns.forEach((col: string, i: number) => { row[col] = params?.[i]; });
+      // books 表补时间戳，与建表语句默认值对齐
+      if (table === 'books') {
+        const now = new Date().toISOString();
+        row.created_at = row.created_at || now;
+        row.updated_at = row.updated_at || now;
+      }
+      arr.push(row);
+      (db[table] as any) = arr;
       return [{ insertId: id }];
     }
     return [];
   }
-  
+
+  // SELECT
   if (sqlUpper.startsWith('SELECT')) {
-    const tableMatch = sql.match(/FROM (\w+)/i);
+    const tableMatch = sql.match(/FROM\s+(\w+)/i);
     if (tableMatch) {
       const table = tableMatch[1] as keyof typeof db;
+      // settings 表特殊处理（保留原逻辑）
       if (table === 'settings') {
         const result: any[] = [];
         for (const key in db.settings) {
@@ -162,19 +177,67 @@ function mockExecute(sql: string, params?: any[]): any[] {
         }
         return result;
       }
-      return (db[table] as any[]) || [];
+      let rows = ((db[table] as any[]) || []).slice();
+      // WHERE col = ? [AND col = ?] 条件过滤（按出现顺序匹配 params）
+      const whereMatches = [...sql.matchAll(/WHERE\s+(\w+)\s*=\s*\?/gi)];
+      if (whereMatches.length > 0 && params && params.length > 0) {
+        whereMatches.forEach((wm, i) => {
+          const col = wm[1];
+          rows = rows.filter(r => r[col] === params[i]);
+        });
+      }
+      // COUNT(*) 聚合
+      if (/COUNT\s*\(\s*\*\s*\)/i.test(sql)) {
+        return [{ count: rows.length }];
+      }
+      // ORDER BY col ASC|DESC
+      const orderMatch = sql.match(/ORDER\s+BY\s+(\w+)\s+(ASC|DESC)/i);
+      if (orderMatch) {
+        const col = orderMatch[1];
+        const dir = orderMatch[2].toUpperCase() === 'DESC' ? -1 : 1;
+        rows.sort((a, b) => (a[col] > b[col] ? 1 : a[col] < b[col] ? -1 : 0) * dir);
+      }
+      return rows;
     }
     return [];
   }
-  
+
+  // UPDATE：按 SET col=?, ... 解析并更新匹配行
   if (sqlUpper.startsWith('UPDATE')) {
+    const m = sql.match(/UPDATE\s+(\w+)\s+SET\s+(.+?)\s+WHERE\s+(.+)/i);
+    if (m) {
+      const table = m[1] as keyof typeof db;
+      const setClause = m[2];
+      const whereClause = m[3];
+      const setCols = [...setClause.matchAll(/(\w+)\s*=\s*\?/gi)].map(x => x[1]);
+      const whereCols = [...whereClause.matchAll(/(\w+)\s*=\s*\?/gi)].map(x => x[1]);
+      const arr = (db[table] as any[]) || [];
+      const setParams = params ? params.slice(0, setCols.length) : [];
+      const whereParams = params ? params.slice(setCols.length, setCols.length + whereCols.length) : [];
+      arr.forEach(row => {
+        const matched = whereCols.every((col, i) => row[col] === whereParams[i]);
+        if (matched) {
+          setCols.forEach((col, i) => { row[col] = setParams[i]; });
+          row.updated_at = new Date().toISOString();
+        }
+      });
+    }
     return [];
   }
-  
+
+  // DELETE：真实删除匹配行
   if (sqlUpper.startsWith('DELETE')) {
+    const m = sql.match(/DELETE\s+FROM\s+(\w+)\s+WHERE\s+(.+)/i);
+    if (m) {
+      const table = m[1] as keyof typeof db;
+      const whereClause = m[2];
+      const whereCols = [...whereClause.matchAll(/(\w+)\s*=\s*\?/gi)].map(x => x[1]);
+      const arr = (db[table] as any[]) || [];
+      (db[table] as any) = arr.filter(row => !whereCols.every((col, i) => row[col] === params?.[i]));
+    }
     return [];
   }
-  
+
   return [];
 }
 
