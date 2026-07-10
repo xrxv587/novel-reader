@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阅读设置</title>
+    <style id="theme-vars">
+:root {
+  /* === Color System === */
+  --color-primary: #2E7D5B;
+  --color-primary-light: #E8F5EE;
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #B2B2B2;
+  --color-bg-page: #F5F5F5;
+  --color-bg-card: #FFFFFF;
+  --color-border: #EDEDED;
+
+  /* Reading theme backgrounds */
+  --reading-bg-default: #F6F2E9;
+  --reading-text-default: #3E3B32;
+  --reading-bg-white: #FFFFFF;
+  --reading-text-white: #2D2D2D;
+  --reading-bg-green: #CCE8CF;
+  --reading-text-green: #2D5A32;
+  --reading-bg-dark: #1A1A1A;
+  --reading-text-dark: #999999;
+  --reading-bg-parchment: #F0E6D3;
+  --reading-text-parchment: #5C4B32;
+
+  /* Functional colors */
+  --state-error: #E74C3C;
+  --state-warning: #F39C12;
+  --state-success: #27AE60;
+
+  /* === Typography === */
+  --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-size-display: 20px;
+  --font-size-h1: 17px;
+  --font-size-h2: 15px;
+  --font-size-body: 14px;
+  --font-size-caption: 12px;
+  --font-size-reading: 18px;
+  --line-height-display: 28px;
+  --line-height-h1: 24px;
+  --line-height-h2: 22px;
+  --line-height-body: 20px;
+  --line-height-caption: 17px;
+  --line-height-reading: 1.75;
+  --font-weight-medium: 500;
+  --font-weight-regular: 400;
+
+  /* === Spacing === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
+
+  /* === Shadows === */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-background); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="antialiased">
+    <main class="reader-container">
+
+        <!-- Dimmed reading content (background layer, same as reader-menu) -->
+        <div class="reading-content-layer" aria-hidden="true">
+            <h1 class="chapter-title-dimmed">第三章 惊雷</h1>
+            <div class="reading-content-dimmed">
+                <p>夜色如墨，压在苍茫群山之上。远处的峰峦隐没在浓重的雾气里，只余一道模糊的轮廓，像是天地初开时未及抹平的褶皱。风从峡谷深处灌上来，裹挟着草木腐朽的气息和一丝若有若无的血腥味，吹得崖边那株孤松簌簌作响。</p>
+                <p>苏长渊负手立于悬崖之上，衣袍在风中猎猎翻飞。他已在此地等候了整整三日。三日间，除了偶尔掠过的山鹰和脚下翻涌的云海，再无任何活物靠近。但他并不急躁。师父曾说，真正的高手从不追逐时机，而是让时机来追逐自己。</p>
+                <p>忽然，一道苍白的闪电撕裂了厚重如铅的云层，将整座山谷照得亮如白昼。紧接着，雷声从天际滚滚而来，像是千军万马在苍穹之上奔突。雨点随之倾泻而下，硕大而冰冷，砸在岩石上溅起一片碎雾。</p>
+                <p>来了。他感受到了。那股气息极为微弱，却如同深海中暗涌的洋流，沉稳而不可阻挡。那不是普通武者的气机，而是修炼至化境后自然散发出的天地共鸣。来者的修为，至少在通玄境以上。</p>
+            </div>
+        </div>
+
+        <!-- Dim overlay -->
+        <div class="dim-overlay"></div>
+
+        <!-- ====== Bottom Sheet: Reader Settings ====== -->
+        <section class="bottom-sheet" role="dialog" aria-label="阅读设置">
+
+            <!-- Drag handle -->
+            <div class="drag-handle"></div>
+
+            <!-- Header: title + close -->
+            <div class="sheet-header">
+                <span class="sheet-title">阅读设置</span>
+                <button type="button" class="sheet-close" aria-label="关闭设置" data-dom-id="settings-close">&times;</button>
+            </div>
+
+            <!-- Scrollable settings content -->
+            <div class="sheet-content">
+
+                <!-- Font Size (字号) -->
+                <div class="settings-section">
+                    <div class="settings-label">字号</div>
+                    <div class="slider-row">
+                        <button type="button" class="slider-btn" aria-label="减小字号">A-</button>
+                        <div class="slider-track">
+                            <div class="slider-fill" style="width: 45%;"></div>
+                            <input type="range" min="12" max="28" value="18" aria-label="字号大小"
+                                   style="background: linear-gradient(to right, var(--color-primary) 45%, #EDEDED 45%);">
+                        </div>
+                        <button type="button" class="slider-btn" aria-label="增大字号">A+</button>
+                    </div>
+                </div>
+
+                <!-- Line Spacing (行距) -->
+                <div class="settings-section">
+                    <div class="settings-label">行距</div>
+                    <div class="spacing-row">
+                        <span class="spacing-label">紧凑</span>
+                        <div class="slider-track">
+                            <div class="slider-fill" style="width: 50%;"></div>
+                            <input type="range" min="1" max="3" value="2" aria-label="行距"
+                                   style="background: linear-gradient(to right, var(--color-primary) 50%, #EDEDED 50%);">
+                        </div>
+                        <span class="spacing-label">宽松</span>
+                    </div>
+                </div>
+
+                <!-- Background Theme (背景) -->
+                <div class="settings-section">
+                    <div class="settings-label">背景</div>
+                    <div class="theme-row">
+                        <!-- 米白 (selected) -->
+                        <div class="theme-circle selected" data-theme="default" style="background: #F6F2E9;" aria-label="米白背景" role="radio" aria-checked="true">
+                            <span class="theme-check">
+                                <svg viewBox="0 0 14 14" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="2.5 7.5 5.5 10.5 11.5 4"></polyline>
+                                </svg>
+                            </span>
+                        </div>
+                        <!-- 纯白 -->
+                        <div class="theme-circle" data-theme="white" style="background: #FFFFFF; border-color: #EDEDED;" aria-label="纯白背景" role="radio" aria-checked="false">
+                        </div>
+                        <!-- 护眼绿 -->
+                        <div class="theme-circle" data-theme="green" style="background: #CCE8CF;" aria-label="护眼绿背景" role="radio" aria-checked="false">
+                        </div>
+                        <!-- 夜间黑 -->
+                        <div class="theme-circle" data-theme="dark" style="background: #1A1A1A;" aria-label="夜间黑背景" role="radio" aria-checked="false">
+                            <span class="theme-check">
+                                <svg viewBox="0 0 14 14" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke: #FFFFFF;">
+                                    <polyline points="2.5 7.5 5.5 10.5 11.5 4"></polyline>
+                                </svg>
+                            </span>
+                        </div>
+                        <!-- 羊皮纸 -->
+                        <div class="theme-circle" data-theme="parchment" style="background: #F0E6D3;" aria-label="羊皮纸背景" role="radio" aria-checked="false">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Font (字体) -->
+                <div class="settings-section">
+                    <div class="settings-label">字体</div>
+                    <button type="button" class="font-select-row" aria-label="选择字体">
+                        <span class="font-select-label">系统默认</span>
+                        <span class="font-select-arrow">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 6 8 10 12 6"></polyline>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Reading Mode (翻页方式) -->
+                <div class="settings-section">
+                    <div class="settings-label">翻页方式</div>
+                    <div class="radio-row">
+                        <!-- 覆盖翻页 (unselected) -->
+                        <div class="radio-option" role="radio" aria-checked="false" aria-label="覆盖翻页">
+                            <div class="radio-circle">
+                                <div class="radio-circle-inner"></div>
+                            </div>
+                            <span class="radio-label">覆盖翻页</span>
+                        </div>
+                        <!-- 滚动模式 (selected) -->
+                        <div class="radio-option selected" role="radio" aria-checked="true" aria-label="滚动模式">
+                            <div class="radio-circle">
+                                <div class="radio-circle-inner"></div>
+                            </div>
+                            <span class="radio-label">滚动模式</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <style>
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        width: 375px;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      body {
+        width: 375px;
+        min-height: 100vh;
+        font-family: var(--font-family);
+        background: var(--reading-bg-default);
+        color: var(--reading-text-default);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Full-screen reader container */
+      .reader-container {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Reading content (dimmed behind overlay) */
+      .reading-content-layer {
+        width: 100%;
+        height: 100%;
+        padding: 40px 20px 100px 20px;
+        overflow: hidden;
+      }
+
+      .chapter-title-dimmed {
+        font-size: var(--font-size-h1);
+        font-weight: var(--font-weight-medium);
+        color: var(--reading-text-default);
+        line-height: var(--line-height-h1);
+        margin-bottom: var(--space-xl);
+        text-align: center;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        opacity: 0.35;
+      }
+
+      .reading-content-dimmed p {
+        font-size: var(--font-size-reading);
+        line-height: var(--line-height-reading);
+        color: var(--reading-text-default);
+        text-indent: 2em;
+        margin-bottom: 1em;
+        word-break: break-all;
+        word-break: auto-phrase;
+        overflow-wrap: break-word;
+        opacity: 0.35;
+      }
+
+      /* Dim overlay */
+      .dim-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 40;
+        cursor: pointer;
+      }
+
+      /* ====== Bottom Sheet Panel ====== */
+      .bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 65vh;
+        background: var(--color-bg-card);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        z-index: 50;
+        transform: translateY(0);
+        animation: sheetSlideUp 280ms cubic-bezier(0.3, 0, 0, 1) both;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      @keyframes sheetSlideUp {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Drag handle */
+      .drag-handle {
+        width: 36px;
+        height: 4px;
+        background: #D9D9D9;
+        border-radius: 2px;
+        margin: var(--space-md) auto 0 auto;
+        flex-shrink: 0;
+      }
+
+      /* Sheet header */
+      .sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-md) var(--space-lg) 0 var(--space-lg);
+        flex-shrink: 0;
+      }
+
+      .sheet-title {
+        font-size: 16px;
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+      }
+
+      .sheet-close {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--color-text-tertiary);
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        flex-shrink: 0;
+        line-height: 1;
+      }
+
+      .sheet-close:active {
+        color: var(--color-text-secondary);
+      }
+
+      /* Sheet content area */
+      .sheet-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--space-xl) var(--space-lg);
+        padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+      }
+
+      /* ====== Settings Section ====== */
+      .settings-section {
+        margin-bottom: var(--space-xl);
+      }
+
+      .settings-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .settings-label {
+        font-size: var(--font-size-body);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-md);
+        font-weight: var(--font-weight-medium);
+      }
+
+      /* ====== Font Size Slider Row ====== */
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+
+      .slider-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        background: #F5F5F5;
+        border: none;
+        font-size: 15px;
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        font-family: var(--font-family);
+        user-select: none;
+      }
+
+      .slider-btn:active {
+        background: #EBEBEB;
+      }
+
+      /* Custom range slider */
+      .slider-track {
+        flex: 1;
+        position: relative;
+        height: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .slider-track input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 4px;
+        background: #EDEDED;
+        border-radius: 2px;
+        outline: none;
+        position: relative;
+        z-index: 2;
+      }
+
+      .slider-track input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--color-primary);
+        border-radius: var(--radius-full);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(46, 125, 91, 0.3);
+      }
+
+      .slider-track input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: var(--color-primary);
+        border-radius: var(--radius-full);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(46, 125, 91, 0.3);
+      }
+
+      /* Filled progress behind slider */
+      .slider-fill {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 4px;
+        background: var(--color-primary);
+        border-radius: 2px;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      /* Value indicator on font size slider */
+      .slider-value {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: var(--font-size-caption);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-tertiary);
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 3;
+      }
+
+      /* ====== Line Spacing Row ====== */
+      .spacing-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+
+      .spacing-label {
+        font-size: var(--font-size-caption);
+        color: var(--color-text-tertiary);
+        flex-shrink: 0;
+        user-select: none;
+      }
+
+      /* ====== Background Theme Circles ====== */
+      .theme-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+
+      .theme-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        border: 2px solid transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: border-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                    transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative;
+      }
+
+      .theme-circle:active {
+        transform: scale(0.95);
+      }
+
+      /* Selected circle gets primary green border */
+      .theme-circle.selected {
+        border-color: var(--color-primary);
+      }
+
+      /* White circle gets a border so it's visible */
+      .theme-circle[data-theme="white"] {
+        border-color: #EDEDED;
+      }
+
+      .theme-circle[data-theme="white"].selected {
+        border-color: var(--color-primary);
+      }
+
+      /* Checkmark inside circles */
+      .theme-check {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .theme-check svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* Dark circle has white checkmark */
+      .theme-circle[data-theme="dark"] .theme-check svg {
+        stroke: #FFFFFF;
+      }
+
+      /* Default checkmark color (green for light circles) */
+      .theme-circle:not([data-theme="dark"]) .theme-check svg {
+        stroke: var(--color-primary);
+      }
+
+      /* ====== Font Select Dropdown ====== */
+      .font-select-row {
+        width: 100%;
+        height: 40px;
+        background: #F5F5F5;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-md);
+        cursor: pointer;
+        transition: background-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        border: none;
+        font-family: var(--font-family);
+      }
+
+      .font-select-row:active {
+        background: #EBEBEB;
+      }
+
+      .font-select-label {
+        font-size: var(--font-size-body);
+        color: var(--color-text-primary);
+      }
+
+      .font-select-arrow {
+        width: 16px;
+        height: 16px;
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .font-select-arrow svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* ====== Radio Options (Reading Mode) ====== */
+      .radio-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .radio-circle {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        border: 2px solid #D9D9D9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: border-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .radio-circle-inner {
+        width: 10px;
+        height: 10px;
+        border-radius: var(--radius-full);
+        background: transparent;
+        transition: background-color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .radio-option.selected .radio-circle {
+        border-color: var(--color-primary);
+      }
+
+      .radio-option.selected .radio-circle-inner {
+        background: var(--color-primary);
+      }
+
+      .radio-label {
+        font-size: var(--font-size-body);
+        color: var(--color-text-primary);
+      }
+
+      /* ====== Animations ====== */
+      @keyframes slideDown {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Safe area for notch devices */
+      @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .sheet-content {
+          padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
+        }
+      }
+    </style>
+</body>
+</html>

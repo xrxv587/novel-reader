@@ -1,0 +1,102 @@
+{
+  "root": {
+    "nodeId": "gen-project-shell",
+    "kind": "project-shell",
+    "pageIds": ["page-bookshelf", "page-features", "page-reader", "page-reader-menu", "page-reader-settings", "page-chapter-list", "page-search", "page-book-source"],
+    "output": "partials/project-shell.html",
+    "sharedRegions": ["tab-bar"],
+    "privateRegions": [],
+    "mutableSlots": ["activeTab"],
+    "status": "planned",
+    "children": [
+      {
+        "nodeId": "gen-page-bookshelf",
+        "kind": "page-leaf",
+        "pageIds": ["page-bookshelf"],
+        "output": "pages/bookshelf.html",
+        "sharedRegions": [],
+        "privateRegions": ["bookshelf body"],
+        "mutableSlots": ["activeTab"],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-features",
+        "kind": "page-leaf",
+        "pageIds": ["page-features"],
+        "output": "pages/features.html",
+        "sharedRegions": [],
+        "privateRegions": ["features body"],
+        "mutableSlots": ["activeTab"],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-reader",
+        "kind": "page-leaf",
+        "pageIds": ["page-reader"],
+        "output": "pages/reader.html",
+        "sharedRegions": [],
+        "privateRegions": ["reader body"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-reader-menu",
+        "kind": "page-leaf",
+        "pageIds": ["page-reader-menu"],
+        "output": "pages/reader-menu.html",
+        "sharedRegions": [],
+        "privateRegions": ["reader menu overlay"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-reader-settings",
+        "kind": "page-leaf",
+        "pageIds": ["page-reader-settings"],
+        "output": "pages/reader-settings.html",
+        "sharedRegions": [],
+        "privateRegions": ["settings panel"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-chapter-list",
+        "kind": "page-leaf",
+        "pageIds": ["page-chapter-list"],
+        "output": "pages/chapter-list.html",
+        "sharedRegions": [],
+        "privateRegions": ["chapter list panel"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-search",
+        "kind": "page-leaf",
+        "pageIds": ["page-search"],
+        "output": "pages/search.html",
+        "sharedRegions": [],
+        "privateRegions": ["search body"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      },
+      {
+        "nodeId": "gen-page-book-source",
+        "kind": "page-leaf",
+        "pageIds": ["page-book-source"],
+        "output": "pages/book-source.html",
+        "sharedRegions": [],
+        "privateRegions": ["book source body"],
+        "mutableSlots": [],
+        "status": "planned",
+        "children": []
+      }
+    ]
+  }
+}

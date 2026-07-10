@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书架</title>
+    <style id="theme-vars">
+:root {
+  /* === Color System === */
+  --color-primary: #2E7D5B;
+  --color-primary-light: #E8F5EE;
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #B2B2B2;
+  --color-bg-page: #F5F5F5;
+  --color-bg-card: #FFFFFF;
+  --color-border: #EDEDED;
+
+  /* Reading theme backgrounds */
+  --reading-bg-default: #F6F2E9;
+  --reading-text-default: #3E3B32;
+  --reading-bg-white: #FFFFFF;
+  --reading-text-white: #2D2D2D;
+  --reading-bg-green: #CCE8CF;
+  --reading-text-green: #2D5A32;
+  --reading-bg-dark: #1A1A1A;
+  --reading-text-dark: #999999;
+  --reading-bg-parchment: #F0E6D3;
+  --reading-text-parchment: #5C4B32;
+
+  /* Functional colors */
+  --state-error: #E74C3C;
+  --state-warning: #F39C12;
+  --state-success: #27AE60;
+
+  /* === Typography === */
+  --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-size-display: 20px;
+  --font-size-h1: 17px;
+  --font-size-h2: 15px;
+  --font-size-body: 14px;
+  --font-size-caption: 12px;
+  --font-size-reading: 18px;
+  --line-height-display: 28px;
+  --line-height-h1: 24px;
+  --line-height-h2: 22px;
+  --line-height-body: 20px;
+  --line-height-caption: 17px;
+  --line-height-reading: 1.75;
+  --font-weight-medium: 500;
+  --font-weight-regular: 400;
+
+  /* === Spacing === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
+
+  /* === Shadows === */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-background); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="nav-bar">
+        <span class="nav-title">书架</span>
+        <div class="nav-actions">
+            <button class="nav-btn-text" type="button">管理</button>
+            <button class="nav-btn-icon" type="button" aria-label="添加">
+                <svg class="icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Book Grid -->
+        <div class="book-grid-wrapper">
+            <div class="book-grid">
+
+                <!-- Book 1 -->
+                <a class="book-card" href="#" data-dom-id="book-tap-1">
+                    <div class="book-cover">
+                        <div class="book-cover-inner cover-dusty-blue">
+                            <span class="book-cover-title">人间清醒</span>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-title">人间清醒</span>
+                        <span class="book-progress">已读 45%</span>
+                    </div>
+                </a>
+
+                <!-- Book 2 -->
+                <a class="book-card" href="#">
+                    <div class="book-cover">
+                        <div class="book-cover-inner cover-muted-red">
+                            <span class="book-cover-title">三体</span>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-title">三体</span>
+                        <span class="book-progress">已读 72%</span>
+                    </div>
+                </a>
+
+                <!-- Book 3 -->
+                <a class="book-card" href="#">
+                    <div class="book-cover">
+                        <div class="book-cover-inner cover-sage-green">
+                            <span class="book-cover-title">百年孤独</span>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-title">百年孤独</span>
+                        <span class="book-progress">已读 30%</span>
+                    </div>
+                </a>
+
+                <!-- Book 4 -->
+                <a class="book-card" href="#">
+                    <div class="book-cover">
+                        <div class="book-cover-inner cover-warm-beige">
+                            <span class="book-cover-title">活着</span>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-title">活着</span>
+                        <span class="book-progress">已读 88%</span>
+                    </div>
+                </a>
+
+                <!-- Book 5 -->
+                <a class="book-card" href="#">
+                    <div class="book-cover">
+                        <div class="book-cover-inner cover-deep-teal">
+                            <span class="book-cover-title">挪威的森林</span>
+                        </div>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-title">挪威的森林</span>
+                        <span class="book-progress">已读 15%</span>
+                    </div>
+                </a>
+
+                <!-- Add Card -->
+                <button class="add-card" type="button">
+                    <div class="add-card-box">
+                        <svg class="add-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span class="add-label">导入书籍</span>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Tab Bar -->
+    <div class="tab-bar">
+        <button class="tab-item active" type="button" aria-label="书架">
+            <span class="tab-icon">
+                <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                </svg>
+            </span>
+            <span class="tab-label">书架</span>
+        </button>
+        <button class="tab-item inactive" type="button" aria-label="功能" data-dom-id="tab-features">
+            <span class="tab-icon">
+                <svg class="icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </span>
+            <span class="tab-label">功能</span>
+        </button>
+    </div>
+
+    <script>lucide.createIcons();</script>
+
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+
+      /* === Page-specific styles === */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--color-bg-page);
+        color: var(--color-text-primary);
+        width: 375px;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Top Navigation Bar */
+      .nav-bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-lg);
+        background-color: var(--color-bg-page);
+      }
+
+      .nav-bar .nav-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+
+      .nav-bar .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+      }
+
+      .nav-bar .nav-btn-text {
+        font-size: var(--font-size-body);
+        font-weight: var(--font-weight-regular);
+        color: var(--color-text-primary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .nav-bar .nav-btn-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: var(--color-text-primary);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Book Grid */
+      .book-grid-wrapper {
+        padding: var(--space-xl) var(--space-lg) 0 var(--space-lg);
+        padding-bottom: calc(49px + env(safe-area-inset-bottom, 20px) + 24px);
+      }
+
+      .book-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px var(--space-md);
+      }
+
+      /* Book Card */
+      .book-card {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        text-decoration: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .book-cover {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .book-cover-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--space-sm);
+        position: relative;
+      }
+
+      /* Book cover overlay text decoration */
+      .book-cover-inner::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+        pointer-events: none;
+      }
+
+      .book-cover-title {
+        position: relative;
+        z-index: 1;
+        font-size: 10px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.92);
+        line-height: 1.3;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      }
+
+      .book-info {
+        padding-top: var(--space-sm);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .book-title {
+        font-size: var(--font-size-body);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .book-progress {
+        font-size: var(--font-size-caption);
+        color: var(--color-text-tertiary);
+        line-height: 1.4;
+      }
+
+      /* Add Card */
+      .add-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .add-card-box {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        border-radius: var(--radius-md);
+        border: 1.5px dashed var(--color-text-placeholder);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-sm);
+        background-color: transparent;
+        transition: background-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .add-card-box:active {
+        background-color: var(--color-primary-light);
+      }
+
+      .add-card-box .add-icon {
+        width: 24px;
+        height: 24px;
+        color: var(--color-text-placeholder);
+      }
+
+      .add-card-box .add-label {
+        font-size: var(--font-size-caption);
+        color: var(--color-text-placeholder);
+        line-height: 1;
+      }
+
+      /* Cover gradient variants */
+      .cover-dusty-blue {
+        background: linear-gradient(160deg, #8BA4B8 0%, #5C7A94 100%);
+        box-shadow: var(--shadow-card);
+      }
+      .cover-muted-red {
+        background: linear-gradient(160deg, #C4918A 0%, #A06B63 100%);
+        box-shadow: var(--shadow-card);
+      }
+      .cover-sage-green {
+        background: linear-gradient(160deg, #94A892 0%, #6E846B 100%);
+        box-shadow: var(--shadow-card);
+      }
+      .cover-warm-beige {
+        background: linear-gradient(160deg, #C9B99A 0%, #A89670 100%);
+        box-shadow: var(--shadow-card);
+      }
+      .cover-deep-teal {
+        background: linear-gradient(160deg, #6B9E9E 0%, #4A7A7A 100%);
+        box-shadow: var(--shadow-card);
+      }
+
+      /* Bottom Tab Bar */
+      .tab-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 375px;
+        z-index: 20;
+        background-color: var(--color-bg-card);
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: flex-start;
+        padding-top: 6px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .tab-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        -webkit-user-select: none;
+        user-select: none;
+        text-decoration: none;
+      }
+
+      .tab-item .tab-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tab-item .tab-label {
+        font-size: 10px;
+        line-height: 1.2;
+        font-weight: var(--font-weight-regular);
+      }
+
+      .tab-item.active {
+        color: var(--color-primary);
+      }
+
+      .tab-item.inactive {
+        color: var(--color-text-tertiary);
+      }
+
+      /* SVG icon styling */
+      .icon-svg {
+        display: block;
+      }
+    </style>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章节目录</title>
+    <style id="theme-vars">
+:root {
+  /* === Color System === */
+  --color-primary: #2E7D5B;
+  --color-primary-light: #E8F5EE;
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #B2B2B2;
+  --color-bg-page: #F5F5F5;
+  --color-bg-card: #FFFFFF;
+  --color-border: #EDEDED;
+
+  /* Reading theme backgrounds */
+  --reading-bg-default: #F6F2E9;
+  --reading-text-default: #3E3B32;
+  --reading-bg-white: #FFFFFF;
+  --reading-text-white: #2D2D2D;
+  --reading-bg-green: #CCE8CF;
+  --reading-text-green: #2D5A32;
+  --reading-bg-dark: #1A1A1A;
+  --reading-text-dark: #999999;
+  --reading-bg-parchment: #F0E6D3;
+  --reading-text-parchment: #5C4B32;
+
+  /* Functional colors */
+  --state-error: #E74C3C;
+  --state-warning: #F39C12;
+  --state-success: #27AE60;
+
+  /* === Typography === */
+  --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-size-display: 20px;
+  --font-size-h1: 17px;
+  --font-size-h2: 15px;
+  --font-size-body: 14px;
+  --font-size-caption: 12px;
+  --font-size-reading: 18px;
+  --line-height-display: 28px;
+  --line-height-h1: 24px;
+  --line-height-h2: 22px;
+  --line-height-body: 20px;
+  --line-height-caption: 17px;
+  --line-height-reading: 1.75;
+  --font-weight-medium: 500;
+  --font-weight-regular: 400;
+
+  /* === Spacing === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
+
+  /* === Shadows === */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-background); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <!-- Background reader page (simulated) -->
+    <div class="reader-page" aria-hidden="true">
+      <p class="reader-page-text">夜色如墨，月光被厚重的云层遮蔽，天地间一片寂静。远处的山峦在黑暗中若隐若现，仿佛沉睡的巨兽。一阵微风掠过，带来了草木的气息，也带来了即将到来的风暴的预兆。</p>
+    </div>
+
+    <!-- Chapter list sliding panel -->
+    <div class="panel-wrapper" role="dialog" aria-label="章节目录" aria-modal="true">
+
+        <!-- Dimmed left area — click to close -->
+        <div class="dimmed-overlay" data-dom-id="chapter-back" role="button" aria-label="关闭目录" tabindex="0"></div>
+
+        <!-- Chapter panel -->
+        <div class="chapter-panel">
+
+            <!-- Panel header with title and search -->
+            <div class="panel-header">
+                <h1 class="panel-title">章节目录</h1>
+                <div class="search-wrapper">
+                    <input
+                        type="text"
+                        class="search-input"
+                        placeholder="搜索章节"
+                        aria-label="搜索章节"
+                    />
+                </div>
+            </div>
+
+            <!-- Scrollable chapter list -->
+            <div class="chapter-list no-scrollbar" role="list" aria-label="章节列表">
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第一章 风起</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第二章 云涌</div>
+
+                <!-- Current chapter with green highlight -->
+                <div class="chapter-item chapter-item--current" role="listitem" tabindex="0" aria-current="true">第三章 惊雷</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第四章 雨落</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第五章 破晓</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第六章 星沉</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第七章 月隐</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第八章 霜降</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第九章 雪霁</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第十章 春归</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第十一章 潮生</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第十二章 雾散</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第十三章 天明</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1">第十四章 路转</div>
+
+                <div class="chapter-item" role="listitem" tabindex="-1" style="border-bottom: none;">第十五章 归途</div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>lucide.createIcons();</script>
+
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: var(--font-family);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Full-screen container simulating the reader page behind the panel */
+      .reader-page {
+        width: 100%;
+        height: 100%;
+        background-color: var(--reading-bg-default);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .reader-page-text {
+        color: var(--reading-text-default);
+        font-size: var(--font-size-reading);
+        line-height: var(--line-height-reading);
+        max-width: 288px;
+        padding: 0 var(--space-lg);
+        text-align: justify;
+        word-break: break-all;
+        opacity: 0.5;
+      }
+
+      /* Slide-in panel wrapper */
+      .panel-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        z-index: 100;
+        animation: panelSlideIn 280ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+      }
+
+      @keyframes panelSlideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      /* Dimmed left overlay (25%) */
+      .dimmed-overlay {
+        width: 25%;
+        min-width: 25%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* Chapter panel (75%) */
+      .chapter-panel {
+        width: 75%;
+        min-width: 75%;
+        height: 100%;
+        background-color: var(--color-bg-card);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Panel header */
+      .panel-header {
+        padding: var(--space-lg);
+        padding-bottom: 0;
+        flex-shrink: 0;
+      }
+
+      .panel-title {
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--color-text-primary);
+        line-height: 24px;
+        margin-bottom: var(--space-md);
+      }
+
+      /* Search input */
+      .search-wrapper {
+        padding: var(--space-md) 0;
+      }
+
+      .search-input {
+        width: 100%;
+        height: 40px;
+        background-color: var(--color-bg-page);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 0 var(--space-md);
+        font-size: var(--font-size-body);
+        color: var(--color-text-primary);
+        outline: none;
+        font-family: var(--font-family);
+        transition: background-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .search-input::placeholder {
+        color: var(--color-text-placeholder);
+      }
+
+      .search-input:focus {
+        background-color: #EDEDED;
+      }
+
+      /* Scrollable chapter list */
+      .chapter-list {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-top: var(--space-sm);
+      }
+
+      .chapter-list.no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Single chapter item */
+      .chapter-item {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-lg);
+        font-size: var(--font-size-body);
+        color: var(--color-text-primary);
+        position: relative;
+        cursor: pointer;
+        transition: background-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        flex-shrink: 0;
+      }
+
+      .chapter-item:active {
+        background-color: var(--color-bg-page);
+      }
+
+      /* Divider between items */
+      .chapter-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: var(--space-lg);
+        right: 0;
+        height: 1px;
+        background-color: var(--color-border);
+      }
+
+      .chapter-item:last-child::after {
+        display: none;
+      }
+
+      /* Current chapter highlight */
+      .chapter-item--current {
+        background-color: var(--color-primary-light);
+        color: var(--color-primary);
+        font-weight: 500;
+        position: relative;
+      }
+
+      /* Green left bar indicator */
+      .chapter-item--current::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 16px;
+        background-color: var(--color-primary);
+        border-radius: 0 2px 2px 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .panel-wrapper {
+          animation-duration: 0.01ms;
+        }
+        .chapter-item {
+          transition-duration: 0.01ms;
+        }
+        .search-input {
+          transition-duration: 0.01ms;
+        }
+      }
+    </style>
+</body>
+</html>

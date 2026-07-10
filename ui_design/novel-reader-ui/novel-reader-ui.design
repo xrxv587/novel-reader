@@ -1,0 +1,221 @@
+{
+  "data": [
+    {
+      "id": "page-bookshelf",
+      "title": "书架",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 612,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/bookshelf.html",
+        "interactions": [
+          {
+            "domId": "tab-features",
+            "targetPageId": "page-features",
+            "hideEdge": false
+          },
+          {
+            "domId": "book-tap-1",
+            "targetPageId": "page-reader",
+            "hideEdge": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-features",
+      "title": "功能",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 200,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/features.html",
+        "interactions": [
+          {
+            "domId": "tab-bookshelf",
+            "targetPageId": "page-bookshelf",
+            "hideEdge": false
+          },
+          {
+            "domId": "feature-search",
+            "targetPageId": "page-search",
+            "hideEdge": false
+          },
+          {
+            "domId": "feature-source",
+            "targetPageId": "page-book-source",
+            "hideEdge": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-reader",
+      "title": "阅读页",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 200,
+        "y": 590,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/reader.html",
+        "interactions": [
+          {
+            "domId": "reader-tap-center",
+            "targetPageId": "page-reader-menu",
+            "hideEdge": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-reader-menu",
+      "title": "阅读页-菜单呼出",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 620,
+        "y": 1770,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/reader-menu.html",
+        "interactions": [
+          {
+            "domId": "menu-backdrop",
+            "targetPageId": "page-reader",
+            "hideEdge": true
+          },
+          {
+            "domId": "menu-back",
+            "targetPageId": "page-reader",
+            "hideEdge": true
+          },
+          {
+            "domId": "menu-back-bookshelf",
+            "targetPageId": "page-bookshelf",
+            "hideEdge": true
+          },
+          {
+            "domId": "menu-catalog",
+            "targetPageId": "page-chapter-list",
+            "hideEdge": false
+          },
+          {
+            "domId": "menu-settings",
+            "targetPageId": "page-reader-settings",
+            "hideEdge": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-reader-settings",
+      "title": "阅读设置面板",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 1040,
+        "y": 2360,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/reader-settings.html",
+        "interactions": [
+          {
+            "domId": "settings-close",
+            "targetPageId": "page-reader-menu",
+            "hideEdge": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-chapter-list",
+      "title": "章节目录",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 1040,
+        "y": 1770,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/chapter-list.html",
+        "interactions": [
+          {
+            "domId": "chapter-back",
+            "targetPageId": "page-reader-menu",
+            "hideEdge": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-search",
+      "title": "搜索页",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 620,
+        "y": 590,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/search.html",
+        "interactions": [
+          {
+            "domId": "search-back",
+            "targetPageId": "page-features",
+            "hideEdge": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-book-source",
+      "title": "书源管理",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1752100800000,
+      "canvasData": {
+        "x": 620,
+        "y": 1180,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/book-source.html",
+        "interactions": [
+          {
+            "domId": "source-back",
+            "targetPageId": "page-features",
+            "hideEdge": true
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": false,
+    "deviceType": "mobile",
+    "projectName": "小说阅读器",
+    "designLibrary": null
+  }
+}

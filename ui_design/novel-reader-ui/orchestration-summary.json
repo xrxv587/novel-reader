@@ -1,0 +1,165 @@
+{
+  "project": {
+    "name": "小说阅读器",
+    "path": "/workspace/novel-reader-ui",
+    "operation": "create",
+    "deviceType": "mobile",
+    "language": "zh-CN",
+    "dashboardMode": false,
+    "replicationMode": null,
+    "sourceUrl": null,
+    "visualSpecExcerpt": null,
+    "styleDefinitionBrief": "Novel reader app inspired by WeChat Read: warm muted tones (cream/beige background, dark green accent), clean sans-serif typography, minimal card-based bookshelf, immersive reading experience with generous whitespace",
+    "designRead": "mobile app / novel reader / warm-muted-clean / showcase+task-driven / avoid dark-heavy-gaming aesthetics",
+    "designDials": {
+      "layoutVariance": 2,
+      "motionIntensity": 1,
+      "visualDensity": 2
+    },
+    "styleContinuityAnchors": {
+      "colorSystem": {
+        "primaryColorRole": "#2E7D5B dark green for primary actions, tab selection, and accents",
+        "brandHuePolicy": "single green hue; warm neutrals for backgrounds",
+        "stateColors": "error #E74C3C, warning #F39C12, success #27AE60"
+      },
+      "shapeSystem": "radius sm 4px, md 8px, lg 12px, full 50%",
+      "typographySystem": "system sans-serif stack: PingFang SC, Helvetica Neue, Microsoft YaHei",
+      "spacingSystem": "4px base: xs 4, sm 8, md 12, lg 16, xl 24, xxl 32",
+      "componentLanguage": "card-based list items, grouped settings rows, bottom sheet panels",
+      "surfaceAndDepth": "cards use 0 2px 8px rgba(0,0,0,0.08); floating panels use deeper shadow",
+      "imageryAndIconography": "linear icons 1.5px stroke, book cover placeholders",
+      "interactionTone": "gentle, minimal; tap feedback only"
+    },
+    "specsConstraints": null,
+    "sharedProjectShellContract": {
+      "navigationShell": "bottom tab bar with 2 tabs: 书架(active green), 功能(gray). White bg, top border #EDEDED, 49px height, 24x24 icons, 10px labels",
+      "primaryColorSystem": "#2E7D5B green accent only; backgrounds cream/white/gray",
+      "typographySystem": "PingFang SC stack; display 20px, h1 17px, h2 15px, body 14px, caption 12px",
+      "radiusScale": "sm 4px btns/tags, md 8px cards/inputs, lg 12px panels/modals",
+      "surfaceDepthModel": "static card shadow alpha 0.08; floating layer shadow alpha up to 0.12",
+      "ctaStyle": "green filled buttons 44px height, rounded 8px",
+      "alignmentRules": "left-aligned content; centered tab bar; 16px page margins"
+    },
+    "generationTree": {
+      "root": {
+        "nodeId": "gen-project-shell",
+        "kind": "project-shell",
+        "output": "partials/project-shell.html",
+        "status": "planned"
+      }
+    }
+  },
+  "designSource": {
+    "operatingMode": "free-explore",
+    "libraryIdentity": {
+      "name": null,
+      "id": null,
+      "version": null,
+      "scope": null,
+      "path": null,
+      "versionSource": null
+    }
+  },
+  "pages": [
+    {
+      "nodeId": "page-bookshelf",
+      "title": "书架",
+      "htmlSrc": "pages/bookshelf.html",
+      "visualNorthStar": "Clean 3-column book grid with cream-white background, each card showing cover + title + reading progress",
+      "compositionPattern": "grid-gallery",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-features",
+      "title": "功能",
+      "htmlSrc": "pages/features.html",
+      "visualNorthStar": "Grouped list settings page with white card groups on gray background, clear icon+text rows",
+      "compositionPattern": "list-grouped",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-reader",
+      "title": "阅读页",
+      "htmlSrc": "pages/reader.html",
+      "visualNorthStar": "Immersive full-screen reading with warm beige background, generous margins, 18px serif-like body text, chapter title, bottom nav bar",
+      "compositionPattern": "single-column-text",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-reader-menu",
+      "title": "阅读页-菜单呼出",
+      "htmlSrc": "pages/reader-menu.html",
+      "visualNorthStar": "Reader page with dimmed background showing top navigation bar and bottom toolbar with 4 icon buttons (目录/书签/夜间/设置)",
+      "compositionPattern": "overlay-toolbar",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-reader-settings",
+      "title": "阅读设置面板",
+      "htmlSrc": "pages/reader-settings.html",
+      "visualNorthStar": "Bottom sheet panel with reading settings: font size slider, line spacing slider, 5 theme color circles, font selector dropdown, reading mode radio",
+      "compositionPattern": "bottom-sheet-form",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-chapter-list",
+      "title": "章节目录",
+      "htmlSrc": "pages/chapter-list.html",
+      "visualNorthStar": "Right-side sliding panel showing chapter list with current chapter highlighted by green left border, search box at top",
+      "compositionPattern": "side-panel-list",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-search",
+      "title": "搜索页",
+      "htmlSrc": "pages/search.html",
+      "visualNorthStar": "Search page with input field at top, grouped search results by source, each result showing book title + author + latest chapter",
+      "compositionPattern": "search-results",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    },
+    {
+      "nodeId": "page-book-source",
+      "title": "书源管理",
+      "htmlSrc": "pages/book-source.html",
+      "visualNorthStar": "Book source management page with source cards showing name, URL, enable/disable toggle, and失效 tag",
+      "compositionPattern": "list-cards",
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false
+    }
+  ],
+  "assets": [],
+  "wiringPlan": [
+    { "from": "page-bookshelf", "to": "page-features", "domId": "tab-features" },
+    { "from": "page-features", "to": "page-bookshelf", "domId": "tab-bookshelf" },
+    { "from": "page-bookshelf", "to": "page-reader", "domId": "book-tap-1" },
+    { "from": "page-reader", "to": "page-reader-menu", "domId": "reader-tap-center" },
+    { "from": "page-reader-menu", "to": "page-reader", "domId": "menu-backdrop" },
+    { "from": "page-reader-menu", "to": "page-reader", "domId": "menu-back" },
+    { "from": "page-reader-menu", "to": "page-chapter-list", "domId": "menu-catalog" },
+    { "from": "page-reader-menu", "to": "page-reader-settings", "domId": "menu-settings" },
+    { "from": "page-features", "to": "page-search", "domId": "feature-search" },
+    { "from": "page-features", "to": "page-book-source", "domId": "feature-source" },
+    { "from": "page-reader-menu", "to": "page-bookshelf", "domId": "menu-back-bookshelf" }
+  ],
+  "hiddenInteractionPlan": [
+    { "from": "page-reader-settings", "to": "page-reader-menu", "domId": "settings-close" },
+    { "from": "page-chapter-list", "to": "page-reader-menu", "domId": "chapter-back" },
+    { "from": "page-search", "to": "page-features", "domId": "search-back" },
+    { "from": "page-book-source", "to": "page-features", "domId": "source-back" }
+  ]
+}
