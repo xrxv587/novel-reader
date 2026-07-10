@@ -1,5 +1,3 @@
-import { detect } from 'jschardet';
-
 // #ifndef APP-PLUS
 // H5 模式下，用户选择的 File 对象暂存到内存，key 为 mem:// 路径
 const memoryFileStore = new Map<string, File>();
@@ -111,19 +109,49 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
   });
 }
 
+/**
+ * 校验字节流是否为合法 UTF-8
+ * 中文小说 txt 实际只有 UTF-8 和 GBK 两种，不是合法 UTF-8 即为 GBK
+ */
+function isValidUtf8(bytes: Uint8Array): boolean {
+  let i = 0;
+  while (i < bytes.length) {
+    const b = bytes[i];
+    if (b < 0x80) {
+      i++;
+    } else if (b >= 0xC2 && b < 0xE0) {
+      if (i + 1 >= bytes.length || (bytes[i + 1] & 0xC0) !== 0x80) return false;
+      i += 2;
+    } else if (b >= 0xE0 && b < 0xF0) {
+      if (i + 2 >= bytes.length) return false;
+      if ((bytes[i + 1] & 0xC0) !== 0x80) return false;
+      if ((bytes[i + 2] & 0xC0) !== 0x80) return false;
+      i += 3;
+    } else if (b >= 0xF0 && b < 0xF5) {
+      if (i + 3 >= bytes.length) return false;
+      if ((bytes[i + 1] & 0xC0) !== 0x80) return false;
+      if ((bytes[i + 2] & 0xC0) !== 0x80) return false;
+      if ((bytes[i + 3] & 0xC0) !== 0x80) return false;
+      i += 4;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
 export async function detectEncoding(filePath: string): Promise<string> {
   try {
     const buffer = await readFileAsArrayBuffer(filePath, 0, 2048);
-    const result = detect(new Uint8Array(buffer));
-    let encoding = result.encoding?.toLowerCase() || 'utf-8';
-    
-    if (encoding === 'gb2312' || encoding === 'gbk' || encoding === 'gb18030') {
-      encoding = 'gbk';
-    } else if (encoding === 'utf-8' || encoding === 'utf8') {
-      encoding = 'utf-8';
+    const bytes = new Uint8Array(buffer);
+
+    // BOM 检测
+    if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+      return 'utf-8';
     }
-    
-    return encoding;
+
+    // 合法 UTF-8 则为 UTF-8，否则视为 GBK
+    return isValidUtf8(bytes) ? 'utf-8' : 'gbk';
   } catch (e) {
     console.error('Detect encoding error:', e);
     return 'utf-8';
