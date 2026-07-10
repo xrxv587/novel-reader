@@ -209,15 +209,18 @@ const progressPercent = computed(() => {
 
 const menuVisible = computed(() => readerStore.isMenuVisible);
 
+// 页面加载时初始化阅读器
 onLoad((options: any) => {
   bookId.value = parseInt(options.bookId) || 0;
   initReader();
 });
 
+// 页面卸载时保存阅读进度
 onUnload(() => {
   saveReadProgress();
 });
 
+/** 初始化阅读器：加载书籍信息、章节列表、当前章节内容 */
 const initReader = async () => {
   const sysInfo = uni.getSystemInfoSync();
   statusBarHeight.value = sysInfo.statusBarHeight || 20;
@@ -243,12 +246,14 @@ const initReader = async () => {
   await loadChapter(currentChapterIndex.value);
 };
 
+/** 加载书籍章节列表 */
 const loadChapters = async () => {
   const chapters = await chapterDB.getChapters(bookId.value);
   totalChapters.value = chapters.length;
   readerStore.setChapters(chapters as any);
 };
 
+/** 加载指定章节内容 */
 const loadChapter = async (index: number) => {
   if (index < 0 || index >= totalChapters.value) {
     if (index < 0) {
@@ -289,6 +294,7 @@ const loadChapter = async (index: number) => {
   }
 };
 
+/** 页面点击处理：左侧上一章、右侧下一章、中间呼出菜单 */
 const handlePageClick = (e: any) => {
   if (settingsVisible.value) {
     settingsVisible.value = false;
@@ -385,6 +391,7 @@ const onProgressChange = (e: any) => {
   }
 };
 
+/** 防抖保存阅读进度（2秒后执行） */
 const scheduleSaveProgress = () => {
   if (saveProgressTimer) {
     clearTimeout(saveProgressTimer);

@@ -1,6 +1,15 @@
+/**
+ * 文件操作工具模块
+ * 封装 plus.io 文件读取、编码检测与转换等功能
+ */
+
 import jschardet from 'jschardet';
 import iconv from 'iconv-lite';
 
+/**
+ * 读取文件指定范围内容
+ * 注意：plus.io 的 slice 是闭区间，需要 end - 1 修正
+ */
 export function readFileRange(filePath: string, start: number, end: number, encoding: string = 'utf-8'): Promise<string> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS
@@ -37,6 +46,7 @@ export function readFileRange(filePath: string, start: number, end: number, enco
   });
 }
 
+/** 以 ArrayBuffer 形式读取文件（用于 GBK 编码转换） */
 export function readFileAsArrayBuffer(filePath: string, start: number, end: number): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS
@@ -73,6 +83,7 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
   });
 }
 
+/** 检测文件编码（读取前 2KB 进行判断） */
 export async function detectEncoding(filePath: string): Promise<string> {
   try {
     const buffer = await readFileAsArrayBuffer(filePath, 0, 2048);
@@ -92,6 +103,7 @@ export async function detectEncoding(filePath: string): Promise<string> {
   }
 }
 
+/** 将 ArrayBuffer 解码为字符串（支持 GBK/UTF-8） */
 export function decodeBuffer(buffer: ArrayBuffer, encoding: string): string {
   try {
     const buf = Buffer.from(buffer);
@@ -105,6 +117,7 @@ export function decodeBuffer(buffer: ArrayBuffer, encoding: string): string {
   }
 }
 
+/** 根据编码读取文件内容（自动选择读取方式） */
 export async function readFileWithEncoding(filePath: string, start: number, end: number, encoding: string): Promise<string> {
   if (encoding.toLowerCase() === 'utf-8') {
     return readFileRange(filePath, start, end, 'utf-8');
@@ -114,6 +127,7 @@ export async function readFileWithEncoding(filePath: string, start: number, end:
   return decodeBuffer(buffer, encoding);
 }
 
+/** 获取文件大小 */
 export function getFileSize(filePath: string): Promise<number> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS
@@ -144,6 +158,7 @@ export function getFileSize(filePath: string): Promise<number> {
   });
 }
 
+/** 复制文件到私有目录（防止原文件被删除） */
 export function copyFileToPrivate(srcPath: string, destName: string): Promise<string> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS
@@ -184,6 +199,7 @@ export function copyFileToPrivate(srcPath: string, destName: string): Promise<st
   });
 }
 
+/** 选择 txt 文件（仅 App 端可用） */
 export function chooseTxtFile(): Promise<{ path: string; name: string }> {
   return new Promise((resolve, reject) => {
     // #ifdef APP-PLUS

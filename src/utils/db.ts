@@ -1,7 +1,13 @@
+/**
+ * 数据库工具模块
+ * 封装 SQLite 操作，提供统一的数据库访问接口
+ */
+
 const DB_NAME = 'novel_reader.db';
 let dbInstance: any = null;
 let isInit = false;
 
+// 建表 SQL - 书籍表
 const SQL_CREATE_BOOKS = `
 CREATE TABLE IF NOT EXISTS books (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,6 +28,7 @@ CREATE TABLE IF NOT EXISTS books (
 )
 `;
 
+// 建表 SQL - 章节表
 const SQL_CREATE_CHAPTERS = `
 CREATE TABLE IF NOT EXISTS chapters (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +44,7 @@ CREATE TABLE IF NOT EXISTS chapters (
 )
 `;
 
+// 建表 SQL - 书签表
 const SQL_CREATE_BOOKMARKS = `
 CREATE TABLE IF NOT EXISTS bookmarks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,6 +56,7 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 )
 `;
 
+// 建表 SQL - 书源表
 const SQL_CREATE_BOOK_SOURCES = `
 CREATE TABLE IF NOT EXISTS book_sources (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,6 +69,7 @@ CREATE TABLE IF NOT EXISTS book_sources (
 )
 `;
 
+// 建表 SQL - 设置表
 const SQL_CREATE_SETTINGS = `
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
@@ -67,6 +77,7 @@ CREATE TABLE IF NOT EXISTS settings (
 )
 `;
 
+/** 打开数据库连接 */
 export function openDB(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (dbInstance) {
@@ -87,6 +98,7 @@ export function openDB(): Promise<any> {
     // #endif
     
     // #ifndef APP-PLUS
+    // H5/小程序环境使用内存模拟数据库
     const mockDB = {
       name: DB_NAME,
       data: {
@@ -103,10 +115,12 @@ export function openDB(): Promise<any> {
   });
 }
 
+/** 执行 SQL 语句 */
 export function executeSql(sql: string, params?: any[]): Promise<any> {
   return new Promise((resolve, reject) => {
     openDB().then(() => {
       // #ifdef APP-PLUS
+      // 先尝试 selectSql，失败则用 executeSql（用于 INSERT/UPDATE/DELETE）
       plus.sqlite.selectSql({
         name: DB_NAME,
         sql: sql,
@@ -178,6 +192,7 @@ function mockExecute(sql: string, params?: any[]): any[] {
   return [];
 }
 
+/** 初始化数据库，创建所有表 */
 export function initDB(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isInit) {

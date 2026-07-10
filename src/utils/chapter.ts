@@ -1,3 +1,8 @@
+/**
+ * 章节解析工具模块
+ * 提供章节识别、分章、段落分割等功能
+ */
+
 export interface ChapterInfo {
   title: string;
   startIndex: number;
@@ -5,8 +10,13 @@ export interface ChapterInfo {
   wordCount: number;
 }
 
+// 章节匹配正则：匹配「第X章/节/回/卷/部」格式
 const CHAPTER_REGEX = /^\s*(第[一二三四五六七八九十百千零\d]+[章节回卷部][\s、．。：:]*.*)$/gm;
 
+/**
+ * 解析章节
+ * 优先正则匹配，无匹配时按固定字数分章
+ */
 export function parseChapters(content: string): ChapterInfo[] {
   const chapters: ChapterInfo[] = [];
   let match: RegExpExecArray | null;
@@ -32,6 +42,7 @@ export function parseChapters(content: string): ChapterInfo[] {
     lastIndex = match.index;
   }
   
+  // 修正最后一章的结束位置
   if (chapters.length > 0) {
     chapters[chapters.length - 1].endIndex = content.length;
     chapters[chapters.length - 1].wordCount = 
@@ -39,6 +50,7 @@ export function parseChapters(content: string): ChapterInfo[] {
       chapters[chapters.length - 1].startIndex;
   }
   
+  // 无章节匹配时，按固定字数分章（默认 5000 字）
   if (chapters.length === 0) {
     return splitBySize(content);
   }
@@ -46,6 +58,7 @@ export function parseChapters(content: string): ChapterInfo[] {
   return chapters;
 }
 
+/** 按固定字数分章（fallback 方案） */
 export function splitBySize(content: string, chunkSize: number = 5000): ChapterInfo[] {
   const chapters: ChapterInfo[] = [];
   
@@ -70,6 +83,7 @@ export function splitBySize(content: string, chunkSize: number = 5000): ChapterI
   return chapters;
 }
 
+/** 将文本按换行符分割成段落数组 */
 export function splitIntoParagraphs(content: string): string[] {
   return content
     .split(/\n+/)
@@ -77,6 +91,7 @@ export function splitIntoParagraphs(content: string): string[] {
     .filter(p => p.length > 0);
 }
 
+/** 根据字符偏移定位所属章节 */
 export function getChapterByOffset(chapters: ChapterInfo[], offset: number): number {
   for (let i = 0; i < chapters.length; i++) {
     if (offset >= chapters[i].startIndex && offset < chapters[i].endIndex) {

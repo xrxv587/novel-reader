@@ -1,3 +1,8 @@
+/**
+ * 阅读状态管理
+ * 管理当前阅读书籍、章节、菜单等状态
+ */
+
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 

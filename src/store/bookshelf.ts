@@ -1,3 +1,8 @@
+/**
+ * 书架状态管理
+ * 管理书籍列表、阅读进度等数据
+ */
+
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import db from '@/utils/db';
@@ -23,6 +28,7 @@ export interface Book {
 export const useBookshelfStore = defineStore('bookshelf', () => {
   const books = ref<Book[]>([]);
 
+  /** 从数据库加载书籍列表 */
   const loadBooks = async () => {
     await db.initDB();
     const sql = `SELECT * FROM books ORDER BY updated_at DESC`;
@@ -30,6 +36,7 @@ export const useBookshelfStore = defineStore('bookshelf', () => {
     books.value = result || [];
   };
 
+  /** 添加新书 */
   const addBook = async (book: Omit<Book, 'id' | 'created_at' | 'updated_at'>): Promise<number> => {
     await db.initDB();
     const sql = `
@@ -55,6 +62,7 @@ export const useBookshelfStore = defineStore('bookshelf', () => {
     return result?.[0]?.insertId || 0;
   };
 
+  /** 更新阅读进度 */
   const updateBookProgress = async (bookId: number, chapter: number, position: number) => {
     await db.initDB();
     const sql = `
@@ -66,6 +74,7 @@ export const useBookshelfStore = defineStore('bookshelf', () => {
     await loadBooks();
   };
 
+  /** 删除书籍及其关联数据 */
   const deleteBook = async (bookId: number) => {
     await db.initDB();
     await db.executeSql(`DELETE FROM books WHERE id = ?`, [bookId]);

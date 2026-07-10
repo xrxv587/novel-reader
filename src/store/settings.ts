@@ -1,3 +1,9 @@
+/**
+ * 阅读设置状态管理
+ * 管理字体、行距、主题等排版设置
+ * 使用 uni.setStorage 持久化存储
+ */
+
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
