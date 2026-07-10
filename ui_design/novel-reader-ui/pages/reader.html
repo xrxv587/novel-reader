@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沉浸阅读</title>
+    <style id="theme-vars">
+:root {
+  /* === Color System === */
+  --color-primary: #2E7D5B;
+  --color-primary-light: #E8F5EE;
+  --color-text-primary: #2D2D2D;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #B2B2B2;
+  --color-bg-page: #F5F5F5;
+  --color-bg-card: #FFFFFF;
+  --color-border: #EDEDED;
+
+  /* Reading theme backgrounds */
+  --reading-bg-default: #F6F2E9;
+  --reading-text-default: #3E3B32;
+  --reading-bg-white: #FFFFFF;
+  --reading-text-white: #2D2D2D;
+  --reading-bg-green: #CCE8CF;
+  --reading-text-green: #2D5A32;
+  --reading-bg-dark: #1A1A1A;
+  --reading-text-dark: #999999;
+  --reading-bg-parchment: #F0E6D3;
+  --reading-text-parchment: #5C4B32;
+
+  /* Functional colors */
+  --state-error: #E74C3C;
+  --state-warning: #F39C12;
+  --state-success: #27AE60;
+
+  /* === Typography === */
+  --font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-size-display: 20px;
+  --font-size-h1: 17px;
+  --font-size-h2: 15px;
+  --font-size-body: 14px;
+  --font-size-caption: 12px;
+  --font-size-reading: 18px;
+  --line-height-display: 28px;
+  --line-height-h1: 24px;
+  --line-height-h2: 22px;
+  --line-height-body: 20px;
+  --line-height-caption: 17px;
+  --line-height-reading: 1.75;
+  --font-weight-medium: 500;
+  --font-weight-regular: 400;
+
+  /* === Spacing === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 50%;
+
+  /* === Shadows === */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-background); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="antialiased">
+    <main class="reader-container">
+
+        <!-- Reading Area -->
+        <div class="reading-area">
+            <h1 class="chapter-title">第三章 惊雷</h1>
+
+            <div class="reading-content">
+                <p>夜色如墨，压在苍茫群山之上。远处的峰峦隐没在浓重的雾气里，只余一道模糊的轮廓，像是天地初开时未及抹平的褶皱。风从峡谷深处灌上来，裹挟着草木腐朽的气息和一丝若有若无的血腥味，吹得崖边那株孤松簌簌作响。</p>
+
+                <p>苏长渊负手立于悬崖之上，衣袍在风中猎猎翻飞。他已在此地等候了整整三日。三日间，除了偶尔掠过的山鹰和脚下翻涌的云海，再无任何活物靠近。但他并不急躁。师父曾说，真正的高手从不追逐时机，而是让时机来追逐自己。他需要做的，只是等。</p>
+
+                <p>忽然，一道苍白的闪电撕裂了厚重如铅的云层，将整座山谷照得亮如白昼。紧接着，雷声从天际滚滚而来，像是千军万马在苍穹之上奔突。雨点随之倾泻而下，硕大而冰冷，砸在岩石上溅起一片碎雾。苏长渊微微眯起双眼，嘴角浮起一丝几不可察的笑意。</p>
+
+                <p>来了。他感受到了。那股气息极为微弱，却如同深海中暗涌的洋流，沉稳而不可阻挡。那不是普通武者的气机，而是修炼至化境后自然散发出的天地共鸣。来者的修为，至少在通玄境以上。苏长渊缓缓转身，右手在腰间一抹，三寸长的碧色短剑无声无息地滑入掌心。</p>
+
+                <p>雨幕之中，一个身影从山道尽头渐渐浮现。那人撑着一把竹骨油伞，步伐看似闲庭信步，每一步落下却都在湿滑的石阶上踩得纹丝不动，仿佛脚底生根。待他走近，伞面微抬，露出一张清瘦而苍老的面孔，双目却亮得惊人，如同一对深埋在枯木中的火种。</p>
+            </div>
+        </div>
+
+        <!-- Tap overlay for center region (to trigger reading menu) -->
+        <div class="tap-overlay" data-dom-id="reader-tap-center"></div>
+
+        <!-- Bottom Chapter Navigation -->
+        <nav class="bottom-nav" aria-label="章节导航">
+            <button type="button" aria-label="上一章">◀ 上一章</button>
+            <span class="chapter-indicator">第3章 / 共128章</span>
+            <button type="button" aria-label="下一章">下一章 ▶</button>
+        </nav>
+
+    </main>
+
+    <style>
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        width: 375px;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      body {
+        width: 375px;
+        min-height: 100vh;
+        font-family: var(--font-family);
+        background: var(--reading-bg-default);
+        color: var(--reading-text-default);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        position: relative;
+      }
+
+      /* Full-screen reading container */
+      .reader-container {
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      /* Scrollable reading area */
+      .reading-area {
+        padding: 40px 20px 100px 20px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Chapter title */
+      .chapter-title {
+        font-size: var(--font-size-h1);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-primary);
+        line-height: var(--line-height-h1);
+        margin-bottom: var(--space-xl);
+        text-align: center;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+      }
+
+      /* Body text paragraphs */
+      .reading-content p {
+        font-size: var(--font-size-reading);
+        line-height: var(--line-height-reading);
+        color: var(--reading-text-default);
+        text-indent: 2em;
+        margin-bottom: 1em;
+        word-break: break-all;
+        word-break: auto-phrase;
+        overflow-wrap: break-word;
+      }
+
+      .reading-content p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Tap overlay - middle third */
+      .tap-overlay {
+        position: fixed;
+        top: 33.33%;
+        left: 0;
+        right: 0;
+        height: 33.34%;
+        z-index: 10;
+        cursor: pointer;
+      }
+
+      /* Bottom chapter navigation */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 20;
+      }
+
+      .bottom-nav button {
+        background: none;
+        border: none;
+        font-size: var(--font-size-caption);
+        color: var(--color-text-tertiary);
+        font-family: var(--font-family);
+        cursor: pointer;
+        padding: 8px 0;
+        line-height: 1;
+        transition: color 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .bottom-nav button:active {
+        color: var(--color-text-secondary);
+      }
+
+      .bottom-nav .chapter-indicator {
+        font-size: var(--font-size-caption);
+        color: var(--color-text-tertiary);
+        user-select: none;
+      }
+
+      /* Safe area for notch devices */
+      @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .bottom-nav {
+          padding-bottom: env(safe-area-inset-bottom);
+          height: calc(56px + env(safe-area-inset-bottom));
+        }
+      }
+
+      /* Prevent overscroll bounce on iOS */
+      .reading-area {
+        overscroll-behavior: contain;
+      }
+    </style>
+</body>
+</html>
