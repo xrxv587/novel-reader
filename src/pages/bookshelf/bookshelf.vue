@@ -40,11 +40,13 @@ import { useBookshelfStore } from '@/store/bookshelf';
 const bookshelfStore = useBookshelfStore();
 const books = ref<any[]>([]);
 
+/** 加载书籍列表 */
 const loadBooks = async () => {
   await bookshelfStore.loadBooks();
   books.value = bookshelfStore.books;
 };
 
+/** 计算阅读进度百分比 */
 const getProgress = (book: any) => {
   if (book.total_chapters === 0) return 0;
   return (book.last_read_chapter / book.total_chapters) * 100;

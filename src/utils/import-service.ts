@@ -1,3 +1,8 @@
+/**
+ * 书籍导入服务模块
+ * 提供本地 txt 文件导入、章节解析、内容读取等功能
+ */
+
 import fileUtil from './file';
 import chapterUtil, { type ChapterInfo } from './chapter';
 import chapterDB from './chapter-db';
@@ -10,6 +15,7 @@ export interface ImportResult {
   error?: string;
 }
 
+/** 导入本地 txt 文件到书架 */
 export async function importLocalTxt(): Promise<ImportResult> {
   try {
     const { path: srcPath, name } = await fileUtil.chooseTxtFile();
@@ -39,6 +45,7 @@ export async function importLocalTxt(): Promise<ImportResult> {
       encoding
     });
     
+    // 后台异步解析章节（不阻塞 UI）
     parseBookChapters(bookId, destPath, encoding, fileSize);
     
     return {
@@ -57,6 +64,7 @@ export async function importLocalTxt(): Promise<ImportResult> {
   }
 }
 
+/** 解析书籍章节并入库（异步执行） */
 async function parseBookChapters(bookId: number, filePath: string, encoding: string, fileSize: number) {
   try {
     const content = await fileUtil.readFileWithEncoding(filePath, 0, fileSize, encoding);
@@ -74,6 +82,7 @@ async function parseBookChapters(bookId: number, filePath: string, encoding: str
   }
 }
 
+/** 获取章节内容（优先从缓存读取，无缓存则从文件读取） */
 export async function getChapterContent(bookId: number, chapterIndex: number, filePath: string, encoding: string): Promise<string[]> {
   try {
     const chapter = await chapterDB.getChapter(bookId, chapterIndex);
@@ -82,6 +91,7 @@ export async function getChapterContent(bookId: number, chapterIndex: number, fi
       return [];
     }
     
+    // 优先从缓存读取
     if (chapter.content && chapter.content.length > 0) {
       return JSON.parse(chapter.content);
     }
@@ -95,6 +105,7 @@ export async function getChapterContent(bookId: number, chapterIndex: number, fi
     
     const paragraphs = chapterUtil.splitIntoParagraphs(content);
     
+    // 缓存段落数组到数据库
     await chapterDB.updateChapterContent(bookId, chapterIndex, JSON.stringify(paragraphs));
     
     return paragraphs;

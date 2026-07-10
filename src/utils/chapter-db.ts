@@ -1,3 +1,8 @@
+/**
+ * 章节数据库操作模块
+ * 提供章节的 CRUD 操作
+ */
+
 import db from './db';
 import type { ChapterInfo } from './chapter';
 
@@ -13,6 +18,7 @@ export interface ChapterRecord {
   word_count: number;
 }
 
+/** 批量保存章节信息（先删除旧数据再插入） */
 export async function saveChapters(bookId: number, chapters: ChapterInfo[]): Promise<void> {
   await db.initDB();
   
@@ -28,6 +34,7 @@ export async function saveChapters(bookId: number, chapters: ChapterInfo[]): Pro
   }
 }
 
+/** 获取书籍的所有章节 */
 export async function getChapters(bookId: number): Promise<ChapterRecord[]> {
   await db.initDB();
   const result: ChapterRecord[] = await db.executeSql(
@@ -37,6 +44,7 @@ export async function getChapters(bookId: number): Promise<ChapterRecord[]> {
   return result || [];
 }
 
+/** 获取单个章节信息 */
 export async function getChapter(bookId: number, chapterIndex: number): Promise<ChapterRecord | null> {
   await db.initDB();
   const result: ChapterRecord[] = await db.executeSql(
@@ -46,6 +54,7 @@ export async function getChapter(bookId: number, chapterIndex: number): Promise<
   return result?.[0] || null;
 }
 
+/** 更新章节内容（缓存段落数组） */
 export async function updateChapterContent(bookId: number, chapterIndex: number, content: string): Promise<void> {
   await db.initDB();
   await db.executeSql(
@@ -54,6 +63,7 @@ export async function updateChapterContent(bookId: number, chapterIndex: number,
   );
 }
 
+/** 获取书籍章节数量 */
 export async function getChapterCount(bookId: number): Promise<number> {
   await db.initDB();
   const result: any[] = await db.executeSql(
