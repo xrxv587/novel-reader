@@ -1,5 +1,4 @@
 import { detect } from 'jschardet';
-import * as iconv from 'iconv-lite';
 
 // #ifndef APP-PLUS
 // H5 模式下，用户选择的 File 对象暂存到内存，key 为 mem:// 路径
@@ -115,7 +114,7 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
 export async function detectEncoding(filePath: string): Promise<string> {
   try {
     const buffer = await readFileAsArrayBuffer(filePath, 0, 2048);
-    const result = detect(Buffer.from(buffer));
+    const result = detect(new Uint8Array(buffer));
     let encoding = result.encoding?.toLowerCase() || 'utf-8';
     
     if (encoding === 'gb2312' || encoding === 'gbk' || encoding === 'gb18030') {
@@ -133,11 +132,10 @@ export async function detectEncoding(filePath: string): Promise<string> {
 
 export function decodeBuffer(buffer: ArrayBuffer, encoding: string): string {
   try {
-    const buf = Buffer.from(buffer);
-    if (encoding.toLowerCase() === 'gbk' || encoding.toLowerCase() === 'gb2312') {
-      return iconv.decode(buf, 'gbk');
-    }
-    return iconv.decode(buf, 'utf-8');
+    const label = encoding.toLowerCase() === 'gbk' || encoding.toLowerCase() === 'gb2312' ? 'gbk' : 'utf-8';
+    // TextDecoder：H5 浏览器原生支持 GBK
+    // APP-PLUS 推荐通过 readFileRange 使用原生 readAsText 解码
+    return new TextDecoder(label).decode(new Uint8Array(buffer));
   } catch (e) {
     console.error('Decode buffer error:', e);
     return '';
@@ -145,12 +143,10 @@ export function decodeBuffer(buffer: ArrayBuffer, encoding: string): string {
 }
 
 export async function readFileWithEncoding(filePath: string, start: number, end: number, encoding: string): Promise<string> {
-  if (encoding.toLowerCase() === 'utf-8') {
-    return readFileRange(filePath, start, end, 'utf-8');
-  }
-  
-  const buffer = await readFileAsArrayBuffer(filePath, start, end);
-  return decodeBuffer(buffer, encoding);
+  // 统一走 readFileRange，底层通过原生 FileReader.readAsText(blob, encoding) 解码
+  // APP-PLUS: plus.io.FileReader 原生支持 GBK
+  // H5: 浏览器 FileReader 原生支持 GBK
+  return readFileRange(filePath, start, end, encoding);
 }
 
 export function getFileSize(filePath: string): Promise<number> {
