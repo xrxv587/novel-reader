@@ -1,5 +1,5 @@
-import jschardet from 'jschardet';
-import iconv from 'iconv-lite';
+import { detect } from 'jschardet';
+import * as iconv from 'iconv-lite';
 
 export function readFileRange(filePath: string, start: number, end: number, encoding: string = 'utf-8'): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -76,7 +76,7 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
 export async function detectEncoding(filePath: string): Promise<string> {
   try {
     const buffer = await readFileAsArrayBuffer(filePath, 0, 2048);
-    const result = jschardet.detect(Buffer.from(buffer));
+    const result = detect(Buffer.from(buffer));
     let encoding = result.encoding?.toLowerCase() || 'utf-8';
     
     if (encoding === 'gb2312' || encoding === 'gbk' || encoding === 'gb18030') {
