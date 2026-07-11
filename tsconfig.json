@@ -1,7 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.json",
   "compilerOptions": {
-    "verbatimModuleSyntax": true,
     "sourceMap": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
@@ -9,7 +8,7 @@
       "@/*": ["./src/*"]
     },
     "lib": ["esnext", "dom"],
-    "types": ["@dcloudio/types", "@types/node"],
+    "types": ["@dcloudio/types"],
     "esModuleInterop": true,
     "target": "esnext"
   },
