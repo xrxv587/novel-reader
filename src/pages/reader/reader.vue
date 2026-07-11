@@ -1,16 +1,16 @@
 <template>
-  <view 
-    class="reader-page" 
+  <view
+    class="reader-page"
     :style="containerStyle"
     @click="handlePageClick"
   >
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    
+
     <view class="chapter-header" v-if="showChapterTitle">
       <text class="chapter-title" :style="{ color: settings.textColor }">{{ currentChapterTitle }}</text>
     </view>
-    
-    <scroll-view 
+
+    <scroll-view
       v-if="settings.flipMode === 'scroll'"
       class="content-scroll"
       scroll-y
@@ -19,38 +19,38 @@
       @scrolltolower="onScrollToLower"
     >
       <view class="content-wrapper" :style="contentStyle">
-        <view 
-          v-for="(para, idx) in visibleParagraphs" 
-          :key="idx" 
+        <view
+          v-for="(para, idx) in visibleParagraphs"
+          :key="idx"
           class="paragraph"
           :style="paragraphStyle"
         >
           {{ para }}
         </view>
-        
+
         <view class="chapter-end" v-if="paragraphs.length > 0 && !hasMore">
           <text :style="{ color: settings.textColor }">-- 本章完 --</text>
         </view>
       </view>
     </scroll-view>
-    
+
     <!-- TODO: 实现覆盖翻页模式的翻页动画效果 -->
-    <view 
+    <view
       v-else
       class="content-page"
       :style="contentStyle"
     >
-      <view 
-        v-for="(para, idx) in visibleParagraphs" 
-        :key="idx" 
+      <view
+        v-for="(para, idx) in visibleParagraphs"
+        :key="idx"
         class="paragraph"
         :style="paragraphStyle"
       >
         {{ para }}
       </view>
     </view>
-    
-    <view class="top-bar" v-if="menuVisible" :style="{ top: statusBarHeight + 'px' }">
+
+    <view class="top-bar" v-if="menuVisible" :style="{ top: statusBarHeight + 'px', backgroundColor: settings.backgroundColor }">
       <view class="nav-bar">
         <text class="back-btn" @click.stop="goBack">←</text>
         <text class="nav-title" :style="{ color: settings.textColor }">{{ bookTitle }}</text>
@@ -58,23 +58,23 @@
         <text class="menu-btn" @click.stop="showBookmarks">🔖</text>
       </view>
     </view>
-    
-    <view class="bottom-bar" v-if="menuVisible">
+
+    <view class="bottom-bar" v-if="menuVisible" :style="{ backgroundColor: settings.backgroundColor }">
       <view class="progress-section">
         <text class="progress-text" :style="{ color: settings.textColor }">
           {{ currentChapterIndex + 1 }} / {{ totalChapters }}
         </text>
-        <slider 
-          :value="progressPercent" 
-          :min="0" 
-          :max="100" 
+        <slider
+          :value="progressPercent"
+          :min="0"
+          :max="100"
           activeColor="#667eea"
           backgroundColor="#ddd"
           @change="onProgressChange"
           block-size="20"
         />
       </view>
-      
+
       <view class="menu-buttons">
         <view class="menu-btn-item" @click.stop="prevChapter">
           <text class="btn-icon">⏮</text>
@@ -94,7 +94,7 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-panel" v-if="settingsVisible" :style="{ backgroundColor: settings.backgroundColor }">
       <view class="settings-section">
         <text class="section-title" :style="{ color: settings.textColor }">字号</text>
@@ -104,12 +104,12 @@
           <text class="size-btn" @click="increaseFontSize" :style="{ color: settings.textColor }">A+</text>
         </view>
       </view>
-      
+
       <view class="settings-section">
         <text class="section-title" :style="{ color: settings.textColor }">主题</text>
         <view class="theme-list">
-          <view 
-            v-for="(theme, key) in themeList" 
+          <view
+            v-for="(theme, key) in themeList"
             :key="key"
             class="theme-item"
             :style="{ backgroundColor: theme.bg }"
@@ -119,18 +119,18 @@
           </view>
         </view>
       </view>
-      
+
       <view class="settings-section">
         <text class="section-title" :style="{ color: settings.textColor }">翻页方式</text>
         <view class="flip-mode-list">
-          <view 
+          <view
             class="flip-mode-item"
             :class="{ active: settings.flipMode === 'scroll' }"
             @click="setFlipMode('scroll')"
           >
             <text :style="{ color: settings.flipMode === 'scroll' ? '#667eea' : settings.textColor }">滚动</text>
           </view>
-          <view 
+          <view
             class="flip-mode-item"
             :class="{ active: settings.flipMode === 'cover' }"
             @click="setFlipMode('cover')"
@@ -140,7 +140,7 @@
         </view>
       </view>
     </view>
-    
+
     <view class="loading-tip" v-if="loading">
       <text>加载中...</text>
     </view>
@@ -233,24 +233,24 @@ onUnload(() => {
 const initReader = async () => {
   const sysInfo = uni.getSystemInfoSync();
   statusBarHeight.value = sysInfo.statusBarHeight || 20;
-  
+
   settingsStore.loadSettings();
-  
+
   const book = await bookshelfStore.getBookById(bookId.value);
   if (!book) {
     uni.showToast({ title: '书籍不存在', icon: 'none' });
     setTimeout(() => uni.navigateBack(), 1500);
     return;
   }
-  
+
   bookTitle.value = book.title;
   bookFilePath.value = book.file_path;
   bookEncoding.value = book.encoding;
   currentChapterIndex.value = book.last_read_chapter;
-  
+
   readerStore.setBook(bookId.value);
   readerStore.setChapter(currentChapterIndex.value);
-  
+
   await loadChapters();
   await loadChapter(currentChapterIndex.value);
 };
@@ -270,29 +270,29 @@ const loadChapter = async (index: number) => {
     }
     return;
   }
-  
+
   loading.value = true;
-  
+
   try {
     const chapter = await chapterDB.getChapter(bookId.value, index);
     if (chapter) {
       currentChapterTitle.value = chapter.title;
     }
-    
+
     const paras = await importService.getChapterContent(
       bookId.value,
       index,
       bookFilePath.value,
       bookEncoding.value
     );
-    
+
     paragraphs.value = paras;
     currentChapterIndex.value = index;
     readerStore.setChapter(index);
-    
+
     scrollTop.value = 0;
     displayCount.value = Math.min(batchSize.value * 4, paras.length);
-    
+
     scheduleSaveProgress();
   } catch (e) {
     console.error('Load chapter error:', e);
@@ -307,10 +307,10 @@ const handlePageClick = (e: any) => {
     settingsVisible.value = false;
     return;
   }
-  
+
   const screenWidth = uni.getSystemInfoSync().windowWidth;
   const clickX = e.detail?.x || e.touches?.[0]?.pageX || (screenWidth / 2);
-  
+
   if (settings.value.flipMode === 'scroll') {
     if (clickX < screenWidth / 3) {
       prevChapter();
