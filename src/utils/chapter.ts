@@ -13,7 +13,6 @@ export function parseChapters(content: string): ChapterInfo[] {
   let lastIndex = 0;
   
   const regex = new RegExp(CHAPTER_REGEX.source, 'gm');
-  
   while ((match = regex.exec(content)) !== null) {
     if (chapters.length > 0) {
       chapters[chapters.length - 1].endIndex = match.index;
@@ -40,34 +39,25 @@ export function parseChapters(content: string): ChapterInfo[] {
   }
   
   if (chapters.length === 0) {
-    return splitBySize(content);
+    return createSingleChapter(content);
   }
   
   return chapters;
 }
 
-export function splitBySize(content: string, chunkSize: number = 5000): ChapterInfo[] {
-  const chapters: ChapterInfo[] = [];
-  
-  for (let i = 0; i < content.length; i += chunkSize) {
-    const end = Math.min(i + chunkSize, content.length);
-    const chapterNum = Math.floor(i / chunkSize) + 1;
-    
-    let title = `第${chapterNum}章`;
-    const firstLine = content.slice(i, i + 50).split('\n')[0].trim();
-    if (firstLine && firstLine.length > 0) {
-      title = firstLine.substring(0, 30);
-    }
-    
-    chapters.push({
-      title,
-      startIndex: i,
-      endIndex: end,
-      wordCount: end - i
-    });
+export function createSingleChapter(content: string): ChapterInfo[] {
+  let title = '正文';
+  const firstLine = content.split('\n')[0].trim();
+  if (firstLine && firstLine.length > 0) {
+    title = firstLine.substring(0, 30);
   }
   
-  return chapters;
+  return [{
+    title,
+    startIndex: 0,
+    endIndex: content.length,
+    wordCount: content.length
+  }];
 }
 
 export function splitIntoParagraphs(content: string): string[] {
@@ -88,7 +78,7 @@ export function getChapterByOffset(chapters: ChapterInfo[], offset: number): num
 
 export default {
   parseChapters,
-  splitBySize,
+  createSingleChapter,
   splitIntoParagraphs,
   getChapterByOffset
 };

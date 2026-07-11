@@ -20,7 +20,7 @@
     >
       <view class="content-wrapper" :style="contentStyle">
         <view 
-          v-for="(para, idx) in paragraphs" 
+          v-for="(para, idx) in visibleParagraphs" 
           :key="idx" 
           class="paragraph"
           :style="paragraphStyle"
@@ -28,7 +28,7 @@
           {{ para }}
         </view>
         
-        <view class="chapter-end" v-if="paragraphs.length > 0">
+        <view class="chapter-end" v-if="paragraphs.length > 0 && !hasMore">
           <text :style="{ color: settings.textColor }">-- 本章完 --</text>
         </view>
       </view>
@@ -41,7 +41,7 @@
       :style="contentStyle"
     >
       <view 
-        v-for="(para, idx) in paragraphs" 
+        v-for="(para, idx) in visibleParagraphs" 
         :key="idx" 
         class="paragraph"
         :style="paragraphStyle"
@@ -177,6 +177,10 @@ const loading = ref(false);
 const showChapterTitle = ref(true);
 const statusBarHeight = ref(0);
 
+const displayCount = ref(0);
+const loadingMore = ref(false);
+const batchSize = ref(40);
+
 let saveProgressTimer: any = null;
 
 const containerStyle = computed(() => ({
@@ -208,6 +212,14 @@ const progressPercent = computed(() => {
 });
 
 const menuVisible = computed(() => readerStore.isMenuVisible);
+
+const visibleParagraphs = computed(() => {
+  return paragraphs.value.slice(0, displayCount.value);
+});
+
+const hasMore = computed(() => {
+  return displayCount.value < paragraphs.value.length;
+});
 
 onLoad((options: any) => {
   bookId.value = parseInt(options.bookId) || 0;
@@ -279,6 +291,7 @@ const loadChapter = async (index: number) => {
     readerStore.setChapter(index);
     
     scrollTop.value = 0;
+    displayCount.value = Math.min(batchSize.value * 4, paras.length);
     
     scheduleSaveProgress();
   } catch (e) {
@@ -338,6 +351,13 @@ const onScroll = (e: any) => {
 };
 
 const onScrollToLower = () => {
+  if (hasMore.value && !loadingMore.value) {
+    loadingMore.value = true;
+    setTimeout(() => {
+      displayCount.value = Math.min(displayCount.value + batchSize.value, paragraphs.value.length);
+      loadingMore.value = false;
+    }, 100);
+  }
 };
 
 const goBack = () => {

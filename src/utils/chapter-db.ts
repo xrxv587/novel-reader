@@ -43,7 +43,7 @@ export async function getChapter(bookId: number, chapterIndex: number): Promise<
     `SELECT * FROM chapters WHERE book_id = ? AND chapter_index = ?`,
     [bookId, chapterIndex]
   );
-  return result?.[0] || null;
+  return result?.[chapterIndex] || null;
 }
 
 export async function updateChapterContent(bookId: number, chapterIndex: number, content: string): Promise<void> {

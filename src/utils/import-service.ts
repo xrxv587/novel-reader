@@ -19,9 +19,11 @@ export async function importLocalTxt(): Promise<ImportResult> {
     
     const destPath = await fileUtil.copyFileToPrivate(srcPath, destName);
     
-    const encoding = await fileUtil.detectEncoding(destPath);
+    const { encoding, hasBom } = await fileUtil.detectEncoding(destPath);
     
     const fileSize = await fileUtil.getFileSize(destPath);
+    const effectiveSize = hasBom ? fileSize - 3 : fileSize;
+    const startOffset = hasBom ? 3 : 0;
     
     const bookshelfStore = useBookshelfStore();
     const bookId = await bookshelfStore.addBook({
@@ -32,14 +34,14 @@ export async function importLocalTxt(): Promise<ImportResult> {
       source_url: '',
       source_id: 0,
       total_chapters: 0,
-      total_size: fileSize,
+      total_size: effectiveSize,
       last_read_chapter: 0,
       last_read_position: 0,
       cover_image: '',
       encoding
     });
     
-    parseBookChapters(bookId, destPath, encoding, fileSize);
+    parseBookChapters(bookId, destPath, encoding, effectiveSize, startOffset);
     
     return {
       bookId,
@@ -57,13 +59,40 @@ export async function importLocalTxt(): Promise<ImportResult> {
   }
 }
 
-async function parseBookChapters(bookId: number, filePath: string, encoding: string, fileSize: number) {
+function getByteOffset(content: string, charIndex: number, encoding: string): number {
+  if (encoding.toLowerCase() === 'gbk' || encoding.toLowerCase() === 'gb2312') {
+    return charIndex * 2;
+  }
+  
+  let byteOffset = 0;
+  for (let i = 0; i < charIndex && i < content.length; i++) {
+    const charCode = content.charCodeAt(i);
+    if (charCode < 0x80) {
+      byteOffset += 1;
+    } else if (charCode < 0x800) {
+      byteOffset += 2;
+    } else if (charCode < 0x10000) {
+      byteOffset += 3;
+    } else {
+      byteOffset += 4;
+    }
+  }
+  return byteOffset;
+}
+
+async function parseBookChapters(bookId: number, filePath: string, encoding: string, fileSize: number, startOffset: number = 0) {
   try {
-    const content = await fileUtil.readFileWithEncoding(filePath, 0, fileSize, encoding);
+    const content = await fileUtil.readFileWithEncoding(filePath, startOffset, startOffset + fileSize, encoding);
     
     const chapters: ChapterInfo[] = chapterUtil.parseChapters(content);
     
-    await chapterDB.saveChapters(bookId, chapters);
+    const byteChapters = chapters.map(ch => ({
+      ...ch,
+      startIndex: startOffset + getByteOffset(content, ch.startIndex, encoding),
+      endIndex: startOffset + getByteOffset(content, ch.endIndex - 1, encoding)
+    }));
+    
+    await chapterDB.saveChapters(bookId, byteChapters);
     
     const bookshelfStore = useBookshelfStore();
     await bookshelfStore.loadBooks();

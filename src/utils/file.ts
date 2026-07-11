@@ -28,7 +28,7 @@ export function readFileRange(filePath: string, start: number, end: number, enco
                   resolve(e.target.result);
                 };
                 reader.onerror = reject;
-                const blob = file.slice(start, end - 1);
+                const blob = file.slice(start, end);
                 reader.readAsText(blob, encoding);
               },
               reject
@@ -77,7 +77,7 @@ export function readFileAsArrayBuffer(filePath: string, start: number, end: numb
                   resolve(e.target.result);
                 };
                 reader.onerror = reject;
-                const blob = file.slice(start, end - 1);
+                const blob = file.slice(start, end);
                 reader.readAsArrayBuffer(blob);
               },
               reject
@@ -140,21 +140,21 @@ function isValidUtf8(bytes: Uint8Array): boolean {
   return true;
 }
 
-export async function detectEncoding(filePath: string): Promise<string> {
+export async function detectEncoding(filePath: string): Promise<{ encoding: string; hasBom: boolean }> {
   try {
     const buffer = await readFileAsArrayBuffer(filePath, 0, 2048);
     const bytes = new Uint8Array(buffer);
 
     // BOM 检测
     if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
-      return 'utf-8';
+      return { encoding: 'utf-8', hasBom: true };
     }
 
     // 合法 UTF-8 则为 UTF-8，否则视为 GBK
-    return isValidUtf8(bytes) ? 'utf-8' : 'gbk';
+    return { encoding: isValidUtf8(bytes) ? 'utf-8' : 'gbk', hasBom: false };
   } catch (e) {
     console.error('Detect encoding error:', e);
-    return 'utf-8';
+    return { encoding: 'utf-8', hasBom: false };
   }
 }
 
